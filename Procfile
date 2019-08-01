@@ -1,1 +1,1 @@
- worker: cd $HOME/heroku_output && ./Penthouse-Security 
+worker: cd $HOME/heroku_output && ./Penthouse-Security
