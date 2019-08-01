@@ -10,7 +10,7 @@ namespace Penthouse_Security
         DiscordSocketClient client;
         CommandHandler handler;
 
-        const string token = "NjA2NTI2MTQxNzAzOTEzNDcz.XUNhGA.eJPl-hC4SDtOzvAD2pF31N-8gFs";
+        const string token = "NjA2NTI2MTQxNzAzOTEzNDcz.XUNi0Q.9WQ7HKKY1EMdGn6HxQVZWYKmg7c";
 
         public static void Main(string[] args)
         => new Program().StartAsync().GetAwaiter().GetResult();
