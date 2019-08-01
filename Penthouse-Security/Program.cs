@@ -10,7 +10,7 @@ namespace Penthouse_Security
         DiscordSocketClient client;
         CommandHandler handler;
 
-        const string token = "NjA2NTI2MTQxNzAzOTEzNDcz.XUMWcw.7D_HKzQH7QDESDgtmKRfnFOq30o";
+        const string token = "NjA2NTI2MTQxNzAzOTEzNDcz.XUNhGA.eJPl-hC4SDtOzvAD2pF31N-8gFs";
 
         public static void Main(string[] args)
         => new Program().StartAsync().GetAwaiter().GetResult();
@@ -21,7 +21,7 @@ namespace Penthouse_Security
 
             client = new DiscordSocketClient(new DiscordSocketConfig
             {
-                LogLevel = LogSeverity.Verbose,                
+                LogLevel = LogSeverity.Verbose,
             });
 
             client.Log += Log;
