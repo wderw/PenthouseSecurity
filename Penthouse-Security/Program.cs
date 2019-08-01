@@ -21,8 +21,7 @@ namespace Penthouse_Security
 
             client = new DiscordSocketClient(new DiscordSocketConfig
             {
-                LogLevel = LogSeverity.Verbose,
-
+                LogLevel = LogSeverity.Verbose,                
             });
 
             client.Log += Log;
