@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -12,7 +13,13 @@ namespace Penthouse_Security
         [Command("anime")]
         public async Task Execute()
         {
-            await Context.Channel.SendMessageAsync("anime chuj");
+            await Context.Channel.SendMessageAsync("anime super ekstra");
+        }
+
+        [Command("repeat")]
+        public async Task Respond([Remainder] string message)
+        {
+            await Context.Channel.SendMessageAsync(message);
         }
     }
 }
