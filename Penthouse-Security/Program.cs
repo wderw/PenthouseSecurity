@@ -10,7 +10,7 @@ namespace Penthouse_Security
         DiscordSocketClient client;
         CommandHandler handler;
 
-        const string token = "NjA2NTI2MTQxNzAzOTEzNDcz.XUNlrg.G65av77Esz10g73YA1lvj1uhpNc";
+        string token = Environment.GetEnvironmentVariable("BOT_TOKEN");
 
         public static void Main(string[] args)
         => new Program().StartAsync().GetAwaiter().GetResult();
