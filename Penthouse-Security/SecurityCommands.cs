@@ -16,7 +16,7 @@ namespace Penthouse_Security
             await Context.Channel.SendMessageAsync("anime super ekstra");
         }
 
-        [Command("event")]
+        [Command("repeat")]
         public async Task Respond([Remainder] string message)
         {
             await Context.Channel.SendMessageAsync(message);
