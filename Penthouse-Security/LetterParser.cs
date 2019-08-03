@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Penthouse_Security
 {
@@ -12,27 +13,27 @@ namespace Penthouse_Security
         //TODO: Add VerySpecialStrings -> eg. letter P becomes :parking: ; letter o becomes :o2:
         //TODO: Add randomizer
 
-        static string regInd = "regional_indicator_";
-        static string[] numbers = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
+        private static string regInd = "regional_indicator_";
+        private static string[] numbers = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
 
-        static List<string> specialStrings = new List<string>
+        private static List<string> specialStrings = new List<string>
         {
             "cool",  "free",  "abcd", "new", "abc", "atm", "sos", "ab", "ok", "vs", "cl", "id", "wc", "ng", "up", "a", "b", "m"
         };
 
         public LetterParser() {}
 
-        private static Boolean charIsANumber(char c)
+        private Boolean charIsANumber(char c)
         {
             return c >= 48 && c <= 57;
         }
 
-        private static string wrapString(string s)
+        private string wrapString(string s)
         {
             return ":" + s + ":";
         }
 
-        private static string getCharacterRepresentation(char c)
+        private string getCharacterRepresentation(char c)
         {
             if (charIsANumber(c))
                 return numbers[c - 48];
@@ -40,7 +41,7 @@ namespace Penthouse_Security
                 return regInd + c;
         }
 
-        private static string convertWord(string word)
+        private string convertWord(string word)
         {
             string output = "";
 
@@ -87,7 +88,7 @@ namespace Penthouse_Security
             return output;
         }
 
-        public static string parse(string inputString)
+        public string parse(string inputString)
         {
             var s = Regex.Replace(inputString, "[A-Z]", m => " " + m.ToString().ToLower());
             var fixedInput = Regex.Replace(s, "[^a-zA-Z0-9% ._]", string.Empty);

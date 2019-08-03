@@ -28,7 +28,7 @@ namespace Penthouse_Security
 
         private string InitializeBotToken()
         {
-            string token = Environment.GetEnvironmentVariable("BOT_TOKEN");
+            string token = Environment.GetEnvironmentVariable(Config.vars["botTokenKey"]);
 
             if (token == "" || token == null)
             {

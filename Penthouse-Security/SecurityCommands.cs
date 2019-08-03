@@ -41,8 +41,8 @@ namespace Penthouse_Security
 
         [Command("parse")]
         public async Task Parse([Remainder] string message)
-        {
-            string outputMessage = LetterParser.parse(message);
+        {            
+            string outputMessage = (new LetterParser()).parse(message);
             await Context.Channel.SendMessageAsync(outputMessage);
         }
     }

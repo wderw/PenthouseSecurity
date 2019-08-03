@@ -9,6 +9,7 @@ namespace Penthouse_Security
         public static Dictionary<string, string> vars = new Dictionary<string, string>
             {
                 { "cmdPrefix", "!" },
+                { "botTokenKey", "BOT_TOKEN" }
             };
     }
 }
