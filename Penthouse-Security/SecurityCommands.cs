@@ -45,5 +45,17 @@ namespace Penthouse_Security
             string outputMessage = (new LetterParser()).parse(message);
             await Context.Channel.SendMessageAsync(outputMessage);
         }
+
+        [Command("help")]
+        public async Task Display()
+        {
+            string helpMessage = "**Available commands:** \n" +
+                "!anime - *perform a reality check* \n" +
+                "!time - *get time to papaj hours* \n" +
+                "!parse - *convert text with style* \n" +
+                "!repeat - *echo text*";
+
+            await Context.Channel.SendMessageAsync(helpMessage);
+        }
     }
 }
