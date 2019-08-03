@@ -8,8 +8,6 @@ using System.Reflection;
 
 namespace Penthouse_Security
 {
-
-
     class CommandHandler
     {
         DiscordSocketClient client;
@@ -49,7 +47,6 @@ namespace Penthouse_Security
                     Console.WriteLine("SERVER: " + msg.Content);
                 }
             }
-
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Penthouse_Security
         }
 
         [Command("repeat")]
-        public async Task Respond([Remainder] string message)
+        public async Task Repeat([Remainder] string message)
         {
             await Context.Channel.SendMessageAsync(message);
         }
