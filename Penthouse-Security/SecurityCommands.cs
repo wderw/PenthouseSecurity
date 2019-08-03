@@ -41,9 +41,15 @@ namespace Penthouse_Security
 
         [Command("parse")]
         public async Task Parse([Remainder] string message)
-        {            
+        {
             string outputMessage = (new LetterParser()).parse(message);
             await Context.Channel.SendMessageAsync(outputMessage);
+        }
+
+        [Command("roll")]
+        public async Task Roll()
+        {
+            await Context.Channel.SendMessageAsync("Rolling dice:" + new Random().Next(0,101));
         }
 
         [Command("help")]
@@ -53,7 +59,8 @@ namespace Penthouse_Security
                 "!anime - *perform a reality check* \n" +
                 "!time - *get time to papaj hours* \n" +
                 "!parse - *convert text with style* \n" +
-                "!repeat - *echo text*";
+                "!repeat - *echo text* \n" +
+                "!roll - *roll 0 - 100*";
 
             await Context.Channel.SendMessageAsync(helpMessage);
         }

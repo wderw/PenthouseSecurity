@@ -23,7 +23,7 @@ namespace Penthouse_Security
 
         public LetterParser() {}
 
-        private Boolean charIsANumber(char c)
+        private bool charIsANumber(char c)
         {
             return c >= 48 && c <= 57;
         }
@@ -61,9 +61,9 @@ namespace Penthouse_Security
                         stringbuilder.Insert(index, " ", special.Length);
                         wordNoSpecials = stringbuilder.ToString();
                     }
-                    catch (ArgumentNullException e)
+                    catch (Exception e)
                     {
-
+                        Log.Warning(e.Message);
                     }
                 }
             }
