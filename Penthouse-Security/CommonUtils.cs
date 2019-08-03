@@ -24,5 +24,12 @@ namespace Penthouse_Security
 
             await Context.Channel.SendMessageAsync(verdict + difference.ToString());
         }
+
+        [Command("parse")]
+        public async Task Parse([Remainder] string message)
+        {
+            string outputMessage = LetterParser.parse(message);
+            await Context.Channel.SendMessageAsync(outputMessage);
+        }
     }
 }
