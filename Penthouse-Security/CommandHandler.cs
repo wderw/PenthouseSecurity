@@ -33,18 +33,18 @@ namespace Penthouse_Security
 
             int argPos = 0;
 
-            if(msg.HasStringPrefix(/* TODO : create Config class...  config.cmdPrefix */ "!", ref argPos) ||
+            if(msg.HasStringPrefix(Config.vars["cmdPrefix"], ref argPos) ||
                 msg.HasMentionPrefix(client.CurrentUser, ref argPos)
                 )
             {
                 var result = await service.ExecuteAsync(context, argPos, null);
                 if(!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                 {
-                    Console.WriteLine(result.ErrorReason);
+                    Log.Error(result.ErrorReason);
                 }
                 else
                 {
-                    Console.WriteLine("SERVER: " + msg.Content);
+                    Log.Debug("Executing command: " + msg.Content);
                 }
             }
         }

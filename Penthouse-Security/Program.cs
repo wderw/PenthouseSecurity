@@ -10,21 +10,13 @@ namespace Penthouse_Security
         DiscordSocketClient client;
         CommandHandler handler;
 
-        string token = Environment.GetEnvironmentVariable("BOT_TOKEN");
-
         public static void Main(string[] args)
         => new Program().StartAsync().GetAwaiter().GetResult();
 
-        public async Task StartAsync()
-        {
-            if (token == "" || token == null) return;
-
-            client = new DiscordSocketClient(new DiscordSocketConfig
-            {
-                LogLevel = LogSeverity.Verbose,
-            });
-
-            client.Log += Log;
+        private async Task StartAsync()
+        {            
+            var token = InitializeBotToken();
+            InitializeClientLogger();
 
             await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();
@@ -34,9 +26,28 @@ namespace Penthouse_Security
             await Task.Delay(-1);
         }
 
-        private async Task Log(LogMessage msg)
+        private string InitializeBotToken()
         {
-            Console.WriteLine(msg.Message);
+            string token = Environment.GetEnvironmentVariable("BOT_TOKEN");
+
+            if (token == "" || token == null)
+            {
+                Log.Error("Bot token is invalid!");
+                throw new InvalidBotTokenException();
+            }
+
+            return token;
+        }
+        private class InvalidBotTokenException : Exception {}
+
+        private void InitializeClientLogger()
+        {
+            client = new DiscordSocketClient(new DiscordSocketConfig
+            {
+                LogLevel = LogSeverity.Verbose,
+            });
+
+            client.Log += Log.ClientLog;
         }
     }
 }
