@@ -1,4 +1,6 @@
 ﻿using Discord;
+using Discord.Commands;
+using Discord.API;
 using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
@@ -24,10 +26,30 @@ namespace Penthouse_Security
 
             handler = new CommandHandler();
             await handler.InitializeAsync(client);
-            
+           
             new CallbackScheduler(10000, () =>
             {
-                Log.Info("papahour");
+                ulong id = 0;
+                foreach (SocketGuild g in client.Guilds)
+                {
+                    id = g.Id;
+                }
+
+                ulong channelId = 0;
+                foreach (SocketChannel channel in client.GetGuild(id).TextChannels)
+                {
+                    if (channel.ToString() == "ogólny")
+                    {
+                        channelId = channel.Id;
+                        break;
+                    }
+                }
+
+                if (DateTime.Now.Hour == 21 && DateTime.Now.Minute == 37)
+                {
+                    client.GetGuild(id).GetTextChannel(channelId).SendMessageAsync(":jp2:");
+                    System.Threading.Thread.Sleep(70000);
+                }                
             });
 
             await Task.Delay(-1);            
