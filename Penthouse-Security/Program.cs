@@ -2,6 +2,7 @@
 using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace Penthouse_Security
 {
@@ -23,7 +24,13 @@ namespace Penthouse_Security
 
             handler = new CommandHandler();
             await handler.InitializeAsync(client);
-            await Task.Delay(-1);
+            
+            new CallbackScheduler(10000, () =>
+            {
+                Log.Info("papahour");
+            });
+
+            await Task.Delay(-1);            
         }
 
         private string InitializeBotToken()

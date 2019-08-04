@@ -25,12 +25,9 @@ namespace Penthouse_Security
         [Command("time")]
         public async Task GetTimeToPapaHour()
         {
-            var now = DateTime.Now;
-            var papahour = new DateTime(now.Year, now.Month, now.Day, 21, 37, 0);
-            var difference = papahour - now;
+            var difference = Utils.GetTimeToPapaHour();
 
             string verdict;
-
             if (difference.TotalSeconds < 0)
                 verdict = "Papatime is long overdue. You're late by:";
             else
@@ -49,7 +46,8 @@ namespace Penthouse_Security
         [Command("roll")]
         public async Task Roll()
         {
-            await Context.Channel.SendMessageAsync("Rolling dice:" + new Random().Next(0,101));
+            string username = Context.User.Username;
+            await Context.Channel.SendMessageAsync(username + " rolled: " + new Random().Next(1,101));
         }
 
         [Command("help")]
