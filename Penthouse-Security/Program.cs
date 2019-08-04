@@ -29,6 +29,8 @@ namespace Penthouse_Security
            
             new CallbackScheduler(10000, () =>
             {
+                Log.Debug("still alive at: " + DateTime.Now.Hour + ":" + DateTime.Now.Minute);                
+
                 ulong id = 0;
                 foreach (SocketGuild g in client.Guilds)
                 {
@@ -45,9 +47,9 @@ namespace Penthouse_Security
                     }
                 }
 
-                if (DateTime.Now.Hour == 21 && DateTime.Now.Minute == 37)
+                if (DateTime.Now.Hour == 19 && DateTime.Now.Minute == 37)
                 {
-                    client.GetGuild(id).GetTextChannel(channelId).SendMessageAsync(":jp2:");
+                    client.GetGuild(id).GetTextChannel(channelId).SendMessageAsync("<:jp2:607634357439692800>");
                     System.Threading.Thread.Sleep(70000);
                 }                
             });

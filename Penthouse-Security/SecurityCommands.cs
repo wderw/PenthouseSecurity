@@ -62,5 +62,11 @@ namespace Penthouse_Security
 
             await Context.Channel.SendMessageAsync(helpMessage);
         }
+
+        [Command("wielkipolak")]
+        public async Task Respond()
+        {
+            await Context.Channel.SendMessageAsync("<:jp2:607634357439692800>");
+        }        
     }
 }
