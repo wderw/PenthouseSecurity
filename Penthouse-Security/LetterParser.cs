@@ -41,43 +41,61 @@ namespace Penthouse_Security
                 return regInd + c;
         }
 
+        private List<int> findAllIndexesOf(string input, string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                throw new ArgumentException("String to find is empty", "value");
+            List<int> allIndexes = new List<int>();
+            for (int index = 0; ; index += value.Length)
+            {
+                index = input.IndexOf(value, index);
+                if (index == -1)
+                    return allIndexes;
+                allIndexes.Add(index);
+            }
+        }
+
+        private bool isLuckOnMySide()
+        {
+            Random rnd = new Random();
+            int lottery = rnd.Next(100);
+            return lottery >= 50;
+        }
+
         private string convertWord(string word)
         {
             string output = "";
 
-            Dictionary<int, string> characters = new Dictionary<int, string>();
+            Dictionary<int, string> parsedCharacters = new Dictionary<int, string>();
 
             string wordNoSpecials = word;
             foreach (var special in specialStrings)
             {
-                while(wordNoSpecials.Contains(special))
+                string wordWithoutCurrentSpecial = wordNoSpecials;
+                foreach (var index in findAllIndexesOf(wordWithoutCurrentSpecial, special))
                 {
-                    try
+                    if (isLuckOnMySide())
                     {
-                        int index = wordNoSpecials.IndexOf(special);
-                        characters[index] = special;
-                        var stringbuilder = new StringBuilder(wordNoSpecials);
+                        parsedCharacters[index] = special;
+                        var stringbuilder = new StringBuilder(wordWithoutCurrentSpecial);
                         stringbuilder.Remove(index, special.Length);
                         stringbuilder.Insert(index, " ", special.Length);
-                        wordNoSpecials = stringbuilder.ToString();
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Warning(e.Message);
+                        wordWithoutCurrentSpecial = stringbuilder.ToString();
                     }
                 }
+                wordNoSpecials = wordWithoutCurrentSpecial;
             }
 
             for (int i = 0; i < wordNoSpecials.Length; i++)
             {
                 var character = wordNoSpecials[i];
                 if (character != ' ')
-                    characters[i] = getCharacterRepresentation(character);
+                    parsedCharacters[i] = getCharacterRepresentation(character);
             }
 
-            SortedDictionary<int, string> sortedCharacters = new SortedDictionary<int, string>(characters);
+            SortedDictionary<int, string> sortedParsedCharacters = new SortedDictionary<int, string>(parsedCharacters);
 
-            foreach (var character in sortedCharacters)
+            foreach (var character in sortedParsedCharacters)
             {
                 if (character.Value == " ")
                     continue;
