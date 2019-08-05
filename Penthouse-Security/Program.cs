@@ -40,14 +40,14 @@ namespace Penthouse_Security
                 ulong channelId = 0;
                 foreach (SocketChannel channel in client.GetGuild(id).TextChannels)
                 {
-                    if (channel.ToString() == "ogólny")
+                    if (channel.ToString() == "ogólny"  || channel.ToString() == "general" || channel.ToString() == "okragly_stul")
                     {
                         channelId = channel.Id;
                         break;
                     }
                 }
 
-                if (DateTime.Now.Hour == 19 && DateTime.Now.Minute == 37)
+                if (DateTime.Now.Hour == Utils.ToGMTHours(21) && DateTime.Now.Minute == 37)
                 {
                     client.GetGuild(id).GetTextChannel(channelId).SendMessageAsync("<:jp2:607634357439692800>");
                     System.Threading.Thread.Sleep(70000);

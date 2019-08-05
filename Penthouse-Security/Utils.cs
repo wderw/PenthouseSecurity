@@ -15,5 +15,10 @@ namespace Penthouse_Security
 
             return difference;
         }
+
+        public static int ToGMTHours(int cestHours)
+        {
+            return cestHours - 2;
+        }
     }
 }
