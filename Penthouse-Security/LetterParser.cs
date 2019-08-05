@@ -11,7 +11,6 @@ namespace Penthouse_Security
     class LetterParser
     {
         //TODO: Add VerySpecialStrings -> eg. letter P becomes :parking: ; letter o becomes :o2:
-        //TODO: Add randomizer
 
         private static string regInd = "regional_indicator_";
         private static string[] numbers = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };

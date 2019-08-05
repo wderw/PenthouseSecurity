@@ -10,7 +10,7 @@ namespace Penthouse_Security
         public static TimeSpan GetTimeToPapaHour()
         {
             var now = DateTime.Now;
-            var papahour = new DateTime(now.Year, now.Month, now.Day, 21, 37, 0);
+            var papahour = new DateTime(now.Year, now.Month, now.Day, ToGMTHours(21), 37, 0);
             var difference = papahour - now;
 
             return difference;
