@@ -108,7 +108,7 @@ namespace Penthouse_Security
 
         public string parse(string inputString)
         {
-            var s = Regex.Replace(inputString, "[A-Z]", m => " " + m.ToString().ToLower());
+            var s = Regex.Replace(inputString, "[A-Z]", m => m.ToString().ToLower());
             var fixedInput = Regex.Replace(s, "[^a-zA-Z0-9% ._]", string.Empty);
 
             var splittedInput = fixedInput.Split(' ');
