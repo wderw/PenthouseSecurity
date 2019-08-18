@@ -10,7 +10,7 @@ namespace Penthouse_Security
 {
     public class SecurityCommands : ModuleBase<SocketCommandContext>
     {
-        [Command("parse")]
+        [Command("echo")]
         public async Task Parse([Remainder] string message)
         {
             string outputMessage = (new LetterParser()).parse(message);
@@ -28,7 +28,7 @@ namespace Penthouse_Security
         public async Task Display()
         {
             string helpMessage = "**Available commands:** \n" +
-                "!parse - *convert text with style* \n" +
+                "!echo - *convert text with style* \n" +
                 "!roll - *roll 0 - 100*";
 
             await Context.Channel.SendMessageAsync(helpMessage);
