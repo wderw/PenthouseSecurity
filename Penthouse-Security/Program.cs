@@ -49,7 +49,7 @@ namespace Penthouse_Security
 
                 if (DateTime.Now.Hour == Utils.ToGMTHours(21) && DateTime.Now.Minute == 37)
                 {
-                    client.GetGuild(id).GetTextChannel(channelId).SendMessageAsync("<:jp2:607634357439692800>");
+                    client.GetGuild(id).GetTextChannel(channelId).SendMessageAsync(Config.vars["okragly_stul_jp2"]);
                     System.Threading.Thread.Sleep(70000);
                 }                
             });
