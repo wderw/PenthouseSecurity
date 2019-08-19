@@ -11,6 +11,25 @@ namespace Penthouse_Security
 {
     public class SecurityCommands : ModuleBase<SocketCommandContext>
     {
+        private static List<string> answers;
+
+        static SecurityCommands()
+        {
+            answers = new List<string>();
+            string path = @"Resources/_8ball.txt";
+            if (File.Exists(path))
+            {
+                foreach (var line in File.ReadLines(path))
+                {
+                    answers.Add(line);
+                }
+            }
+            else
+            {
+                Log.Error(path + " file does not exist!");
+            }
+        }
+
         [Command("help")]
         public async Task Display()
         {
@@ -38,7 +57,7 @@ namespace Penthouse_Security
             string additionalText = "";
             if (randomValue == 69) additionalText = ". hehehehehe.";
             if (randomValue == 100) additionalText = ". farciarski sqrviel.";
-            if (randomValue == 1) additionalText = ". graty jeti.";
+            if (randomValue == 1) additionalText = ". graty jeti xD";
 
             await Context.Channel.SendMessageAsync(username + " rolled: " + "**" + randomValue + "**" + additionalText);
         }
@@ -46,22 +65,8 @@ namespace Penthouse_Security
         [Command("8ball")]
         public async Task _8ball([Remainder] string message)
         {
-            var answers = new List<string>();
-            string path = @"Resources/_8ball.txt";
-            if (File.Exists(path))
-            {
-                foreach(var line in File.ReadLines(path))
-                {
-                    answers.Add(line);
-                }
-
-                var randomLine = new Random().Next(0, answers.Count);
-                await Context.Channel.SendMessageAsync(answers.ElementAt(randomLine));
-            }
-            else
-            {
-                Log.Error(path + " file does not exist!");
-            }
+            var randomLine = new Random().Next(0, answers.Count);
+            await Context.Channel.SendMessageAsync(answers.ElementAt(randomLine));
         }
     }
 }
