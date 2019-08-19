@@ -26,11 +26,9 @@ namespace Penthouse_Security
 
             handler = new CommandHandler();
             await handler.InitializeAsync(client);
-           
+
             new CallbackScheduler(10000, () =>
             {
-                Log.Debug("still alive at: " + DateTime.Now.Hour + ":" + DateTime.Now.Minute);                
-
                 ulong id = 0;
                 foreach (SocketGuild g in client.Guilds)
                 {

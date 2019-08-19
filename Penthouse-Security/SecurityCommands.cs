@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,17 @@ namespace Penthouse_Security
 {
     public class SecurityCommands : ModuleBase<SocketCommandContext>
     {
+        [Command("help")]
+        public async Task Display()
+        {
+            string helpMessage = "**Available commands:** \n" +
+                "!echo - *convert text with style* \n" +
+                "!roll - *roll 0 - 100* \n" +
+                "!8ball - *get an answer to a question*";
+
+            await Context.Channel.SendMessageAsync(helpMessage);
+        }
+
         [Command("echo")]
         public async Task Parse([Remainder] string message)
         {
@@ -21,17 +33,35 @@ namespace Penthouse_Security
         public async Task Roll()
         {
             string username = Context.User.Username;
-            await Context.Channel.SendMessageAsync(username + " rolled: " + new Random().Next(1,101));
+
+            var randomValue = new Random().Next(1, 101);
+            string additionalText = "";
+            if (randomValue == 69) additionalText = ". hehehehehe.";
+            if (randomValue == 100) additionalText = ". farciarski sqrviel.";
+            if (randomValue == 1) additionalText = ". graty jeti.";
+
+            await Context.Channel.SendMessageAsync(username + " rolled: " + "**" + randomValue + "**" + additionalText);
         }
 
-        [Command("help")]
-        public async Task Display()
+        [Command("8ball")]
+        public async Task _8ball([Remainder] string message)
         {
-            string helpMessage = "**Available commands:** \n" +
-                "!echo - *convert text with style* \n" +
-                "!roll - *roll 0 - 100*";
+            var answers = new List<string>();
+            string path = @"Resources/_8ball.txt";
+            if (File.Exists(path))
+            {
+                foreach(var line in File.ReadLines(path))
+                {
+                    answers.Add(line);
+                }
 
-            await Context.Channel.SendMessageAsync(helpMessage);
-        }     
+                var randomLine = new Random().Next(0, answers.Count);
+                await Context.Channel.SendMessageAsync(answers.ElementAt(randomLine));
+            }
+            else
+            {
+                Log.Error(path + " file does not exist!");
+            }
+        }
     }
 }
