@@ -117,7 +117,7 @@ namespace Penthouse_Security
             foreach (var word in splittedInput)
             {
                 output += convertWord(word);
-                output += " ";
+                output += "  ";
             }
 
             return output;
