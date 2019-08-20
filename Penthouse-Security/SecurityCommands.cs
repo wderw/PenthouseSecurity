@@ -44,8 +44,10 @@ namespace Penthouse_Security
         [Command("echo")]
         public async Task Parse([Remainder] string message)
         {
+            await Context.Message.DeleteAsync();
             string outputMessage = (new LetterParser()).parse(message);
-            await Context.Channel.SendMessageAsync(outputMessage);
+            await Context.Channel.SendMessageAsync("**" + Context.User.Username + "**: " + outputMessage);
+            
         }
 
         [Command("roll")]
