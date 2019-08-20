@@ -61,12 +61,18 @@ namespace Penthouse_Security
 
             await Context.Channel.SendMessageAsync(username + " rolled: " + "**" + randomValue + "**" + additionalText);
         }
-
+        
         [Command("8ball")]
         public async Task _8ball([Remainder] string message)
         {
+            await _8ball(message);
+        }
+
+        [Command("czy")]
+        public async Task _8ball2([Remainder] string message)
+        {
             var randomLine = new Random().Next(0, answers.Count);
-            await Context.Channel.SendMessageAsync(answers.ElementAt(randomLine));
+            await Context.Channel.SendMessageAsync(answers.ElementAt(randomLine));            
         }
     }
 }
