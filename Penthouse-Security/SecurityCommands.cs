@@ -65,7 +65,7 @@ namespace Penthouse_Security
         [Command("8ball")]
         public async Task _8ball([Remainder] string message)
         {
-            await _8ball(message);
+            await _8ball2(message);
         }
 
         [Command("czy")]
