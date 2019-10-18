@@ -36,6 +36,7 @@ namespace Penthouse_Security
             string helpMessage = "**Available commands:** \n" +
                 "!echo - *convert text with style* \n" +
                 "!roll - *roll 0 - 100* \n" +
+                "!uptime - *show bot uptime* \n" +
                 "!8ball - *get an answer to a question*";
 
             await Context.Channel.SendMessageAsync(helpMessage);
@@ -67,26 +68,37 @@ namespace Penthouse_Security
         [Command("8ball")]
         public async Task _8ball([Remainder] string message)
         {
-            await czy(message);
+            await Czy(message);
         }
 
         [Command("8ball")]
         public async Task _8ball_emptyInputOverload()
         {
-            await czy_emptyInputOverload();
+            await Czy_emptyInputOverload();
         }
 
         [Command("czy")]
-        public async Task czy([Remainder] string message)
+        public async Task Czy([Remainder] string message)
         {
             var randomLine = new Random().Next(0, answers.Count);
             await Context.Channel.SendMessageAsync(answers.ElementAt(randomLine));            
         }
 
         [Command("czy")]
-        public async Task czy_emptyInputOverload()
+        public async Task Czy_emptyInputOverload()
         {
-            await Context.Channel.SendMessageAsync("Dobrze ale może zadaj jakieś pytanie ty jebany kmieciu?");
+            await Context.Channel.SendMessageAsync("Dobrze ale może zadaj jakieś pytanie ty jebany kmieciu?");            
+        }
+
+        [Command("uptime")]
+        public async Task UptimeQuery()
+        {
+            var uptime = Utils.GetUptime();
+            await Context.Channel.SendMessageAsync("Nie wyjebalem sie z rowerka od: " +
+                uptime.Days + " dni, " +
+                uptime.Hours + " godzin, " + 
+                uptime.Minutes + " minut i " + 
+                uptime.Seconds + " sek.");
             return;
         }
     }

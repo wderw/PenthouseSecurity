@@ -17,7 +17,7 @@ namespace Penthouse_Security
         => new Program().StartAsync().GetAwaiter().GetResult();
 
         private async Task StartAsync()
-        {            
+        {   
             var token = InitializeBotToken();
             InitializeClientLogger();
 
@@ -26,6 +26,8 @@ namespace Penthouse_Security
 
             handler = new CommandHandler();
             await handler.InitializeAsync(client);
+
+            Utils.MarkStartupTime();
 
             new CallbackScheduler(10000, () =>
             {
