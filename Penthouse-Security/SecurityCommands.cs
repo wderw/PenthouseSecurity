@@ -15,14 +15,14 @@ namespace Penthouse_Security
 
         static SecurityCommands()
         {
-            answers = new List<string>();
             string path = @"Resources/_8ball.txt";
             if (File.Exists(path))
             {
-                foreach (var line in File.ReadLines(path))
-                {
-                    answers.Add(line);
-                }
+                var contents = File.ReadAllText(path);
+                var b64str = Convert.FromBase64String(contents);
+                string[] lines = Encoding.Default.GetString(b64str).Split("\n");
+
+                answers = lines.ToList();
             }
             else
             {
@@ -57,9 +57,9 @@ namespace Penthouse_Security
 
             var randomValue = new Random().Next(1, 101);
             string additionalText = "";
-            if (randomValue == 69) additionalText = ". hehehehehe.";
-            if (randomValue == 100) additionalText = ". farciarski sqrviel.";
-            if (randomValue == 1) additionalText = ". graty jeti xD";
+            if (randomValue == 69) additionalText = ". Mam 5 lat i bawi mnie ta liczba.";
+            if (randomValue == 100) additionalText = ". ociechuj...";
+            if (randomValue == 1) additionalText = ". frajer xD.";
 
             await Context.Channel.SendMessageAsync(username + " rolled: " + "**" + randomValue + "**" + additionalText);
         }
@@ -67,14 +67,27 @@ namespace Penthouse_Security
         [Command("8ball")]
         public async Task _8ball([Remainder] string message)
         {
-            await _8ball2(message);
+            await czy(message);
+        }
+
+        [Command("8ball")]
+        public async Task _8ball_emptyInputOverload()
+        {
+            await czy_emptyInputOverload();
         }
 
         [Command("czy")]
-        public async Task _8ball2([Remainder] string message)
+        public async Task czy([Remainder] string message)
         {
             var randomLine = new Random().Next(0, answers.Count);
             await Context.Channel.SendMessageAsync(answers.ElementAt(randomLine));            
+        }
+
+        [Command("czy")]
+        public async Task czy_emptyInputOverload()
+        {
+            await Context.Channel.SendMessageAsync("Dobrze ale może zadaj jakieś pytanie ty jebany kmieciu?");
+            return;
         }
     }
 }
