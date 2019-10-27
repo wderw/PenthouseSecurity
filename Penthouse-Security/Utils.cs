@@ -20,7 +20,7 @@ namespace Penthouse_Security
 
         public static int ToGMTHours(int cestHours)
         {
-            return cestHours - 2;
+             return cestHours - 1;
         }
 
         public static TimeSpan GetUptime()
