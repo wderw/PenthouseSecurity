@@ -37,7 +37,17 @@ namespace Penthouse_Security
                 msg.HasMentionPrefix(client.CurrentUser, ref argPos)
                 )
             {
-                var result = await service.ExecuteAsync(context, argPos, null);
+                IResult result;
+                if (msg.Content.Substring(0, 5).ToLower() == "!roll")
+                {
+                    Log.Warning("works");
+                    result = await service.ExecuteAsync(context, "roll", null);
+                }
+                else
+                {
+                    result = await service.ExecuteAsync(context, argPos, null);
+                }
+                
                 if(!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                 {
                     Log.Error(result.ErrorReason);
