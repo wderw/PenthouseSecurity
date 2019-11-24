@@ -45,6 +45,7 @@ namespace Penthouse_Security
             helpMessage.AppendLine("!weather - *check weather conditions*");
             helpMessage.AppendLine("!forecast - *check 5-day weather forecast*");
             helpMessage.AppendLine("!spin - *roll the slot machine*");
+            helpMessage.AppendLine("!slots - *slot machine description*");
 
             await Context.Channel.SendMessageAsync(helpMessage.ToString());
         }
