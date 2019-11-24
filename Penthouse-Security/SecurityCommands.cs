@@ -108,7 +108,7 @@ namespace Penthouse_Security
         }
 
         [Command("weather")]
-        public async Task WeatherForecast([Remainder] string city)
+        public async Task WeatherReport([Remainder] string city)
         {
             var weatherService = new WeatherService();
             string jsonResponse = string.Empty;
@@ -121,6 +121,11 @@ namespace Penthouse_Security
             catch (WebException e)
             {
                 Log.Error("WebException: " + e.ToString());
+                if (e.Message == "The remote server returned an error: (404) Not Found.")
+                {
+                    await Context.Channel.SendMessageAsync("Ale wiesz kmieciu że nie ma takiego miasta na jebanym świecie?");
+                }
+
                 return;
             }
             catch (Exception e)
@@ -134,7 +139,7 @@ namespace Penthouse_Security
             {
                 weather = JObject.Parse(jsonResponse);
             }
-            catch(JsonReaderException e)
+            catch (JsonReaderException e)
             {
                 Log.Error("Invalid json format: " + e.ToString());
                 return;
@@ -143,6 +148,49 @@ namespace Penthouse_Security
             string report = weatherService.GetReport(weather);
 
             await Context.Channel.SendMessageAsync(report);
+        }
+
+        [Command("forecast")]
+        public async Task WeatherForecast([Remainder] string city)
+        {
+            var weatherService = new WeatherService();
+            string jsonResponse = string.Empty;
+            string url = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&APPID=53bbda84142d7bb7062a43eabe3ea303";
+
+            try
+            {
+                jsonResponse = await weatherService.GetWeather(url);
+            }
+            catch (WebException e)
+            {
+                Log.Error("WebException: " + e.ToString());
+                if(e.Message == "The remote server returned an error: (404) Not Found.")
+                {
+                    await Context.Channel.SendMessageAsync("Ale wiesz kmieciu że nie ma takiego miasta na jebanym świecie?");
+                }
+
+                return;
+            }
+            catch (Exception e)
+            {
+                Log.Error("WebClient Unknown error: " + e.Message);
+                return;
+            }
+
+            JObject weather;
+            try
+            {
+                weather = JObject.Parse(jsonResponse);
+            }
+            catch (JsonReaderException e)
+            {
+                Log.Error("Invalid json format: " + e.ToString());
+                return;
+            }
+
+            string forecast = weatherService.GetForecast(weather);
+
+            await Context.Channel.SendMessageAsync(forecast);
         }
     }
 }

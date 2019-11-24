@@ -9,9 +9,21 @@ namespace Penthouse_Security
 {
     class WeatherService
     {
-        private class SkyInfo
+        private struct WeatherInfo
         {
-            public SkyInfo(string d, string i)
+            public int temperature;
+            public string region;
+            public int humidity;
+            public double windSpeed;
+            public int pressure;
+            public string city;
+            public string cloudiness;
+            public int id;
+        }
+
+        private struct QuickInfo
+        {
+            public QuickInfo(string d, string i)
             {
                 description = d;
                 icon = i;
@@ -21,13 +33,13 @@ namespace Penthouse_Security
             public string icon;
         }
 
-        private static Dictionary<int, SkyInfo> skyInfos = new Dictionary<int, SkyInfo>
+        private static Dictionary<int, QuickInfo> skyInfos = new Dictionary<int, QuickInfo>
         {
-            { 800, new SkyInfo("czysto whuj", ":sunny:")},
-            { 801, new SkyInfo("no jest chmura czy dwie i ta", ":white_sun_small_cloud:")},
-            { 802, new SkyInfo("chmury sa tu i tam.", ":cloud:")},
-            { 803, new SkyInfo("rozjebane chmury sa podobno.", ":cloud:")},
-            { 804, new SkyInfo("chuja widac.", ":cloud:")},
+            { 800, new QuickInfo("czysto whuj", ":sunny:")},
+            { 801, new QuickInfo("no jest chmura czy dwie i ta", ":white_sun_small_cloud:")},
+            { 802, new QuickInfo("chmury sa tu i tam.", ":cloud:")},
+            { 803, new QuickInfo("rozjebane chmury sa podobno.", ":cloud:")},
+            { 804, new QuickInfo("chuja widac.", ":cloud:")},
         };
 
         public async Task<string> GetWeather(string url)
@@ -38,45 +50,126 @@ namespace Penthouse_Security
             }
         }
 
+        private QuickInfo GetQuickInfoById(int id)
+        {
+
+            string icon = string.Empty;
+            string description = string.Empty;
+            if (id >= 200 && id < 300)
+            {
+                description = "przyszla ona :zaba2:";
+                icon = ":cloud_lightning:";
+            }
+            else if (id >= 300 && id < 400)
+            {
+                description = "letko deszczy.";
+                icon = ":cloud_rain:";
+            }
+            else if (id >= 500 && id < 600)
+            {
+                description = "pizga deszczem a ty jeszcze.";
+                icon = ":cloud_rain:";
+            }
+            else if (id >= 600 && id < 700)
+            {
+                description = "śniegiem kurvi az milo.";
+                icon = ":cloud_snow:";
+            }
+            else if (id >= 700 && id < 800)
+            {
+                description = "lokurwa tam to tornado maja XD RIP.";
+                icon = ":cloud_tornado:";
+            }
+            else
+            {
+                description = skyInfos[id].description;
+                icon = skyInfos[id].icon;
+            }
+
+            return new QuickInfo(description, icon);
+        }
+
+        public string GetForecast(JObject weather)
+        {
+            var forecast = new StringBuilder();
+
+            forecast.Append("Forekast dla szithola jakim jest **" + weather.SelectToken("$.city.name").Value<string>() + "**:");
+            forecast.AppendLine();
+            forecast.AppendLine();
+
+            var dayCount = 0;
+
+            for(int i = 0; i < 40; i += 8)
+            {                
+                WeatherInfo info = new WeatherInfo();                
+                info.temperature = Utils.KelvinToCelsius(weather.SelectToken("$.list[" + i + "].main.temp").Value<int>());
+
+                // unused in forecast
+                //info.region = weather.SelectToken("$.list[" + i + "].sys.country").Value<string>();
+
+                info.humidity = weather.SelectToken("$.list[" + i + "].main.humidity").Value<int>();
+                info.windSpeed = weather.SelectToken("$.list[" + i + "].wind.speed").Value<double>();
+                info.pressure = weather.SelectToken("$.list[" + i + "].main.pressure").Value<int>();
+                info.city = weather.SelectToken("$.city.name").Value<string>();
+                info.cloudiness = weather.SelectToken("$.list[" + i + "].clouds.all").Value<string>();
+                info.id = weather.SelectToken("$.list[" + i + "].weather[0].id").Value<int>();
+
+                var today = (DateTime.Now + new TimeSpan(dayCount, 0, 0, 0)).DayOfWeek;
+
+                var quickInfo = GetQuickInfoById(info.id);
+
+                forecast.Append(quickInfo.icon + " ");
+                forecast.Append(info.temperature + "°C ");
+                forecast.Append(" `" + today + "`");                
+                forecast.AppendLine();
+
+                dayCount++;
+            }
+
+            return forecast.ToString();
+        }
+        
         public string GetReport(JObject weather)
         {
-            var temperature = Utils.KelvinToCelsius(weather.SelectToken("$.main.temp").Value<int>());
-            var region = weather.SelectToken("$.sys.country").Value<string>();
-            var humidity = weather.SelectToken("$.main.humidity").Value<int>();
-            var windSpeed = weather.SelectToken("$.wind.speed").Value<double>();
-            var pressure = weather.SelectToken("$.main.pressure").Value<int>();
-            var city = weather.SelectToken("$.name").Value<string>();
-            var cloudiness = weather.SelectToken("$.clouds.all").Value<string>();
-            var id = weather.SelectToken("$.weather[0].id").Value<int>();
+            WeatherInfo info;
+
+            info.temperature = Utils.KelvinToCelsius(weather.SelectToken("$.main.temp").Value<int>());
+            info.region = weather.SelectToken("$.sys.country").Value<string>();
+            info.humidity = weather.SelectToken("$.main.humidity").Value<int>();
+            info.windSpeed = weather.SelectToken("$.wind.speed").Value<double>();
+            info.pressure = weather.SelectToken("$.main.pressure").Value<int>();
+            info.city = weather.SelectToken("$.name").Value<string>();
+            info.cloudiness = weather.SelectToken("$.clouds.all").Value<string>();
+            info.id = weather.SelectToken("$.weather[0].id").Value<int>();
 
             var report = new StringBuilder();
 
-            if (region == "FR")
+            if (info.region == "FR")
                 report.Append("Le ");
 
-            report.AppendLine("Raport pogodowy na ździś dla wygwizdowa jakim jest **" + city + "**:");
+            report.AppendLine("Raport pogodowy na ździś dla wygwizdowa jakim jest **" + info.city + "**:");
             report.AppendLine();
 
-            if (region == "FR")
+            if (info.region == "FR")
                 report.Append("Le ");
 
-            if (region == "JP")
+            if (info.region == "JP")
                 report.AppendLine("Zobaczmy co tam u *chinoli* xD. ");
 
-            if (region == "PL")
+            if (info.region == "PL")
                 report.AppendLine("Wykryto region: **cebulandia**. ");
 
-            report.Append("Temperatura to wynosi to **" + temperature.ToString() + "** stopni celcjusza, ");
+            report.Append("Temperatura to wynosi to **" + info.temperature.ToString() + "** stopni celcjusza, ");
 
-            if (temperature < 10 && temperature >= 0)
+            if (info.temperature < 10 && info.temperature >= 0)
             {
                 report.AppendLine("czyli troche pizga zimnem ale nie tragedia. ");
             }
-            else if (temperature >= 10 && temperature < 30)
+            else if (info.temperature >= 10 && info.temperature < 30)
             {
                 report.AppendLine("czyli nie pizga zimnem whuj ale zajebiscie tez nie jest. ");
             }
-            else if (temperature < 0)
+            else if (info.temperature < 0)
             {
                 report.AppendLine("czyli mamy ponizej zera ojapierdole. ");
             }
@@ -85,45 +178,16 @@ namespace Penthouse_Security
                 report.AppendLine("czyli znaczy sie ze napierdala goruncem jak nieopamientany chuj. ");
             }
 
-            report.AppendLine("Cisnienie na ryj wynosi **" + pressure + "** hektorpaskali. ");
-            report.AppendLine("Hujmiditi procentowo wychodzi ze **" + humidity + " %**. ");
-            report.AppendLine("Wiater zapierdala z predkoscia **" + windSpeed + "** metra na sekunde kwadrat.");
-            report.AppendLine("Zahmurzenie procentowe **" + cloudiness + " %**. ");
+            report.AppendLine("Cisnienie na ryj wynosi **" + info.pressure + "** hektorpaskali. ");
+            report.AppendLine("Hujmiditi procentowo wychodzi ze **" + info.humidity + " %**. ");
+            report.AppendLine("Wiater zapierdala z predkoscia **" + info.windSpeed + "** metra na sekunde kwadrat.");
+            report.AppendLine("Zahmurzenie procentowe **" + info.cloudiness + " %**. ");
             report.AppendLine();
             report.AppendLine("Rysuje sie to mniej wiecej tak: ");
 
-            string icon = "";
-            string description = "";
-            if(id >= 200 && id < 300)
-            {
-                description = "Przyszla ona :zaba2:";
-                icon = ":cloud_lightning:";
-            }
-            else if(id >= 300 && id < 400)
-            {
-                description = "Letko deszczy.";
-                icon = ":cloud_rain:";
-            }
-            else if (id >= 500 && id < 600)
-            {
-                description = "Pizga deszczem a ty jeszcze.";
-                icon = ":cloud_rain:";
-            }
-            else if (id >= 600 && id < 700)
-            {
-                description = "Śniegiem kurvi az milo.";
-                icon = ":cloud_snow:";
-            }
-            else if (id >= 700 && id < 800)
-            {
-                description = "Lokurwa tam to tornado maja XD RIP.";
-                icon = ":cloud_tornado:";
-            }
-            else
-            {
-                description = skyInfos[id].description;
-                icon = skyInfos[id].icon;  
-            }
+            var quickInfo = GetQuickInfoById(info.id);
+            string icon = quickInfo.icon;
+            string description = quickInfo.description;
 
             report.AppendLine(icon);
             report.AppendLine();
