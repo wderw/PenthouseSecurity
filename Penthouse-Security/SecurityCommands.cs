@@ -44,6 +44,7 @@ namespace Penthouse_Security
             helpMessage.AppendLine("!8ball - *get an answer to a question*");
             helpMessage.AppendLine("!weather - *check weather conditions*");
             helpMessage.AppendLine("!forecast - *check 5-day weather forecast*");
+            helpMessage.AppendLine("!spin - *roll the slot machine*");
 
             await Context.Channel.SendMessageAsync(helpMessage.ToString());
         }
@@ -54,7 +55,6 @@ namespace Penthouse_Security
             await Context.Message.DeleteAsync();
             string outputMessage = (new LetterParser()).parse(message);
             await Context.Channel.SendMessageAsync("**" + Context.User.Username + "**: " + outputMessage);
-
         }
 
         [Command("roll")]
@@ -165,7 +165,7 @@ namespace Penthouse_Security
             catch (WebException e)
             {
                 Log.Error("WebException: " + e.ToString());
-                if(e.Message == "The remote server returned an error: (404) Not Found.")
+                if (e.Message == "The remote server returned an error: (404) Not Found.")
                 {
                     await Context.Channel.SendMessageAsync("Ale wiesz kmieciu że nie ma takiego miasta na jebanym świecie?");
                 }
@@ -192,6 +192,22 @@ namespace Penthouse_Security
             string forecast = weatherService.GetForecast(weather);
 
             await Context.Channel.SendMessageAsync(forecast);
+        }
+
+        [Command("spin")]
+        public async Task SlotmachineSpin()
+        {            
+            var slotmachine = new Slotmachine();
+            var result = slotmachine.Spin();
+            string username = Context.User.Username;
+            await Context.Channel.SendMessageAsync(username + " has rolled:\n" + result);
+        }
+
+        [Command("slots")]
+        public async Task SlotmachineDescribe()
+        {
+            Embed description = await Slotmachine.SlotDescription();
+            await Context.Channel.SendMessageAsync("", false, description);
         }
     }
 }
