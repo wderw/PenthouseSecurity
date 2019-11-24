@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,6 +34,16 @@ namespace Penthouse_Security
         public static void MarkStartupTime()
         {
             startupTime = DateTime.Now;
+        }
+
+        public static double FahrenheitToCelsius(double fahrenheit)
+        {
+            return (fahrenheit - 32) * 5/9;
+        }
+
+        public static int KelvinToCelsius(double kelvin)
+        {
+            return (int)(kelvin - 274.15);
         }
     }
 }

@@ -40,7 +40,6 @@ namespace Penthouse_Security
                 IResult result;
                 if (msg.Content.Substring(0, 5).ToLower() == "!roll")
                 {
-                    Log.Warning("works");
                     result = await service.ExecuteAsync(context, "roll", null);
                 }
                 else
