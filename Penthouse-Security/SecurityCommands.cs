@@ -43,6 +43,7 @@ namespace Penthouse_Security
             helpMessage.AppendLine("!uptime - *show bot uptime*");
             helpMessage.AppendLine("!8ball - *get an answer to a question*");
             helpMessage.AppendLine("!weather - *check weather conditions*");
+            helpMessage.AppendLine("!forecast - *check 5-day weather forecast*");
 
             await Context.Channel.SendMessageAsync(helpMessage.ToString());
         }
