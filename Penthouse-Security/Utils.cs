@@ -8,7 +8,13 @@ namespace Penthouse_Security
 {
     public class Utils
     {
+        public static Random random { get; }
         public static DateTime startupTime;
+
+        static Utils()
+        {
+            random = new Random();
+        }
 
         public static TimeSpan GetTimeToPapaHour()
         {
@@ -34,16 +40,6 @@ namespace Penthouse_Security
         public static void MarkStartupTime()
         {
             startupTime = DateTime.Now;
-        }
-
-        public static double FahrenheitToCelsius(double fahrenheit)
-        {
-            return (fahrenheit - 32) * 5/9;
-        }
-
-        public static int KelvinToCelsius(double kelvin)
-        {
-            return (int)(kelvin - 274.15);
         }
     }
 }

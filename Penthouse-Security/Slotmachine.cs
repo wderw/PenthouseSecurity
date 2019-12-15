@@ -1,4 +1,6 @@
 ﻿using Discord;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,9 +10,10 @@ namespace Penthouse_Security
 {
     class Slotmachine
     {
-        private int[] scores = new int[] { 1, 10, 100, 1000 };
-
-        private static Dictionary<int, string> icons = new Dictionary<int, string>
+        private Random random;
+        private DatabaseConnector dbConnector;
+        private readonly int[] scores = new int[] { 1, 10, 100, 1000 };
+        private readonly static Dictionary<int, string> icons = new Dictionary<int, string>
         {
             { 0, ":onion:" },
             { 1, ":cherries:" },
@@ -18,11 +21,28 @@ namespace Penthouse_Security
             { 3, ":seven:" }
         };
 
+        public Slotmachine(DatabaseConnector dbConnector)
+        {
+            random = Utils.random;
+            this.dbConnector = dbConnector ?? throw new ArgumentNullException("dbConnector");
+        }
+
+        public async Task<int> GetSpinCount()
+        {
+            var spinCollection = dbConnector.GetSpinCollection();
+
+            var filter = new BsonDocument("name", "spinCount");
+
+            var document = await spinCollection.Find(filter).Limit(1).SingleAsync();
+            Log.Warning(document.GetElement("spinCount").Value.AsInt32.ToString());
+            return document.GetElement("spinCount").Value.AsInt32;
+        }
+
         public static async Task<Embed> SlotDescription()
         {
             var description = new EmbedBuilder();
 
-            description.WithTitle("**Slut machine (v0.2 alpha af):**");
+            description.WithTitle("**Slut machine v0.3:**");
             description.AddField("1) " + ":onion: :onion: :onion:" + " - pełny cebularski frajer", "----------", false);
             description.AddField("2) " + ":cherries: :cherries: :grey_question: - participation trophy", "----------", false);
             description.AddField("3) " + ":cherries: :cherries: :cherries: - czeresniakowa trujca", "----------", false);
@@ -35,10 +55,22 @@ namespace Penthouse_Security
             return description.Build();
         }
 
-        public string Spin()
+        public async void IncrementSpins()
         {
+            var currentSpinCount = await GetSpinCount();
+            currentSpinCount++;
+
+            var spinCollection = dbConnector.GetSpinCollection();
+            var filter = Builders<BsonDocument>.Filter.Eq("name", "spinCount");
+            var update = Builders<BsonDocument>.Update.Set("spinCount", currentSpinCount);
+            spinCollection.UpdateOne(filter, update);
+        }
+
+        public async Task<string> Spin()
+        {
+            IncrementSpins();
+
             var result = new StringBuilder();
-            var random = new Random();
 
             int value1 = ClampRoll(random.Next(100));
             int value2 = ClampRoll(random.Next(100));

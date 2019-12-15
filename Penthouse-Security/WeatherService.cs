@@ -33,7 +33,7 @@ namespace Penthouse_Security
             public string icon;
         }
 
-        private static Dictionary<int, QuickInfo> skyInfos = new Dictionary<int, QuickInfo>
+        private readonly static Dictionary<int, QuickInfo> skyInfos = new Dictionary<int, QuickInfo>
         {
             { 800, new QuickInfo("czysto whuj", ":sunny:")},
             { 801, new QuickInfo("no jest chmura czy dwie i ta", ":white_sun_small_cloud:")},
@@ -53,8 +53,8 @@ namespace Penthouse_Security
         private QuickInfo GetQuickInfoById(int id)
         {
 
-            string icon = string.Empty;
-            string description = string.Empty;
+            string icon;
+            string description;
             if (id >= 200 && id < 300)
             {
                 description = "przyszla ona :zaba2:";
@@ -88,6 +88,15 @@ namespace Penthouse_Security
 
             return new QuickInfo(description, icon);
         }
+        private double FahrenheitToCelsius(double fahrenheit)
+        {
+            return (fahrenheit - 32) * 5 / 9;
+        }
+
+        private int KelvinToCelsius(double kelvin)
+        {
+            return (int)(kelvin - 274.15);
+        }
 
         public string GetForecast(JObject weather)
         {
@@ -100,19 +109,21 @@ namespace Penthouse_Security
             var dayCount = 0;
 
             for(int i = 0; i < 40; i += 8)
-            {                
-                WeatherInfo info = new WeatherInfo();                
-                info.temperature = Utils.KelvinToCelsius(weather.SelectToken("$.list[" + i + "].main.temp").Value<int>());
+            {
+                var info = new WeatherInfo
+                {
+                    temperature = KelvinToCelsius(weather.SelectToken("$.list[" + i + "].main.temp").Value<int>()),
 
-                // unused in forecast
-                //info.region = weather.SelectToken("$.list[" + i + "].sys.country").Value<string>();
+                    // unused in forecast
+                    //info.region = weather.SelectToken("$.list[" + i + "].sys.country").Value<string>();
 
-                info.humidity = weather.SelectToken("$.list[" + i + "].main.humidity").Value<int>();
-                info.windSpeed = weather.SelectToken("$.list[" + i + "].wind.speed").Value<double>();
-                info.pressure = weather.SelectToken("$.list[" + i + "].main.pressure").Value<int>();
-                info.city = weather.SelectToken("$.city.name").Value<string>();
-                info.cloudiness = weather.SelectToken("$.list[" + i + "].clouds.all").Value<string>();
-                info.id = weather.SelectToken("$.list[" + i + "].weather[0].id").Value<int>();
+                    humidity = weather.SelectToken("$.list[" + i + "].main.humidity").Value<int>(),
+                    windSpeed = weather.SelectToken("$.list[" + i + "].wind.speed").Value<double>(),
+                    pressure = weather.SelectToken("$.list[" + i + "].main.pressure").Value<int>(),
+                    city = weather.SelectToken("$.city.name").Value<string>(),
+                    cloudiness = weather.SelectToken("$.list[" + i + "].clouds.all").Value<string>(),
+                    id = weather.SelectToken("$.list[" + i + "].weather[0].id").Value<int>()
+                };
 
                 var today = (DateTime.Now + new TimeSpan(dayCount, 0, 0, 0)).DayOfWeek;
 
@@ -133,7 +144,7 @@ namespace Penthouse_Security
         {
             WeatherInfo info;
 
-            info.temperature = Utils.KelvinToCelsius(weather.SelectToken("$.main.temp").Value<int>());
+            info.temperature = KelvinToCelsius(weather.SelectToken("$.main.temp").Value<int>());
             info.region = weather.SelectToken("$.sys.country").Value<string>();
             info.humidity = weather.SelectToken("$.main.humidity").Value<int>();
             info.windSpeed = weather.SelectToken("$.wind.speed").Value<double>();

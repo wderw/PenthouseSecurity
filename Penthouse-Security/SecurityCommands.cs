@@ -14,7 +14,14 @@ namespace Penthouse_Security
 {
     public class SecurityCommands : ModuleBase<SocketCommandContext>
     {
-        private static List<string> answers;
+        private Services services
+        {
+            get
+            {
+                return Services.Instance;
+            }
+        }
+        private readonly static List<string> answers;
 
         static SecurityCommands()
         {
@@ -46,6 +53,7 @@ namespace Penthouse_Security
             helpMessage.AppendLine("!forecast - *check 5-day weather forecast*");
             helpMessage.AppendLine("!spin - *roll the slot machine*");
             helpMessage.AppendLine("!slots - *slot machine description*");
+            helpMessage.AppendLine("!stats - *show spin metrics*");
 
             await Context.Channel.SendMessageAsync(helpMessage.ToString());
         }
@@ -54,7 +62,7 @@ namespace Penthouse_Security
         public async Task Parse([Remainder] string message)
         {
             await Context.Message.DeleteAsync();
-            string outputMessage = (new LetterParser()).parse(message);
+            string outputMessage = services.letterParser.Parse(message);
             await Context.Channel.SendMessageAsync("**" + Context.User.Username + "**: " + outputMessage);
         }
 
@@ -73,13 +81,13 @@ namespace Penthouse_Security
         }
 
         [Command("8ball")]
-        public async Task _8ball([Remainder] string message)
+        public async Task Eightball([Remainder] string message)
         {
             await Czy(message);
         }
 
         [Command("8ball")]
-        public async Task _8ball_emptyInputOverload()
+        public async Task Eightball_emptyInputOverload()
         {
             await Czy_emptyInputOverload();
         }
@@ -112,8 +120,8 @@ namespace Penthouse_Security
         [Command("weather")]
         public async Task WeatherReport([Remainder] string city)
         {
-            var weatherService = new WeatherService();
-            string jsonResponse = string.Empty;
+            var weatherService = services.weatherService;
+            string jsonResponse;
             string url = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&APPID=53bbda84142d7bb7062a43eabe3ea303";
 
             try
@@ -155,8 +163,8 @@ namespace Penthouse_Security
         [Command("forecast")]
         public async Task WeatherForecast([Remainder] string city)
         {
-            var weatherService = new WeatherService();
-            string jsonResponse = string.Empty;
+            var weatherService = services.weatherService;
+            string jsonResponse;
             string url = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&APPID=53bbda84142d7bb7062a43eabe3ea303";
 
             try
@@ -197,11 +205,10 @@ namespace Penthouse_Security
 
         [Command("spin")]
         public async Task SlotmachineSpin()
-        {            
-            var slotmachine = new Slotmachine();
-            var result = slotmachine.Spin();
+        {
+            Task<string> result = services.slotmachine.Spin();            
             string username = Context.User.Username;
-            await Context.Channel.SendMessageAsync(username + " has rolled:\n" + result);
+            await Context.Channel.SendMessageAsync(username + " has rolled:\n" + result.Result);
         }
 
         [Command("slots")]
@@ -209,6 +216,13 @@ namespace Penthouse_Security
         {
             Embed description = await Slotmachine.SlotDescription();
             await Context.Channel.SendMessageAsync("", false, description);
+        }
+
+        [Command("stats")]
+        public async Task SpinCount()
+        {
+            var spinCount = await services.slotmachine.GetSpinCount();
+            await Context.Channel.SendMessageAsync("We did " + spinCount + " spins.");
         }
     }
 }

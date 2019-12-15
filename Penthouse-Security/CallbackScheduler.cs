@@ -7,8 +7,8 @@ namespace Penthouse_Security
 {
     public class CallbackScheduler
     {
-        event Action callback;
-        int interval;
+        private event Action callback;
+        private int interval;
 
         public CallbackScheduler(int interval, Action callback)
         {

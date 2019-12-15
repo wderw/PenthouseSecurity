@@ -12,35 +12,35 @@ namespace Penthouse_Security
     {
         //TODO: Add VerySpecialStrings -> eg. letter P becomes :parking: ; letter o becomes :o2:
 
-        private static string regInd = "regional_indicator_";
-        private static string[] numbers = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
+        private readonly static string regInd = "regional_indicator_";
+        private readonly static string[] numbers = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
 
-        private static List<string> specialStrings = new List<string>
+        private readonly static List<string> specialStrings = new List<string>
         {
             "cool",  "free",  "abcd", "new", "abc", "atm", "sos", "ab", "ok", "vs", "cl", "id", "wc", "ng", "up", "a", "b", "m"
         };
 
         public LetterParser() {}
 
-        private bool charIsANumber(char c)
+        private bool CharIsANumber(char c)
         {
             return c >= 48 && c <= 57;
         }
 
-        private string wrapString(string s)
+        private string WrapString(string s)
         {
             return ":" + s + ":";
         }
 
-        private string getCharacterRepresentation(char c)
+        private string GetCharacterRepresentation(char c)
         {
-            if (charIsANumber(c))
+            if (CharIsANumber(c))
                 return numbers[c - 48];
             else
                 return regInd + c;
         }
 
-        private List<int> findAllIndexesOf(string input, string value)
+        private List<int> FindAllIndexesOf(string input, string value)
         {
             if (string.IsNullOrEmpty(value))
                 throw new ArgumentException("String to find is empty", "value");
@@ -54,14 +54,14 @@ namespace Penthouse_Security
             }
         }
 
-        private bool isLuckOnMySide()
+        private bool IsLuckOnMySide()
         {
-            Random rnd = new Random();
+            Random rnd = Utils.random;
             int lottery = rnd.Next(100);
             return lottery >= 50;
         }
 
-        private string convertWord(string word)
+        private string ConvertWord(string word)
         {
             string output = "";
 
@@ -71,9 +71,9 @@ namespace Penthouse_Security
             foreach (var special in specialStrings)
             {
                 string wordWithoutCurrentSpecial = wordNoSpecials;
-                foreach (var index in findAllIndexesOf(wordWithoutCurrentSpecial, special))
+                foreach (var index in FindAllIndexesOf(wordWithoutCurrentSpecial, special))
                 {
-                    if (isLuckOnMySide())
+                    if (IsLuckOnMySide())
                     {
                         parsedCharacters[index] = special;
                         var stringbuilder = new StringBuilder(wordWithoutCurrentSpecial);
@@ -89,7 +89,7 @@ namespace Penthouse_Security
             {
                 var character = wordNoSpecials[i];
                 if (character != ' ')
-                    parsedCharacters[i] = getCharacterRepresentation(character);
+                    parsedCharacters[i] = GetCharacterRepresentation(character);
             }
 
             SortedDictionary<int, string> sortedParsedCharacters = new SortedDictionary<int, string>(parsedCharacters);
@@ -99,13 +99,13 @@ namespace Penthouse_Security
                 if (character.Value == " ")
                     continue;
 
-                output += wrapString(character.Value);
+                output += WrapString(character.Value);
             }
 
             return output;
         }
 
-        public string parse(string inputString)
+        public string Parse(string inputString)
         {
             var s = Regex.Replace(inputString, "[A-Z]", m => m.ToString().ToLower());
             var fixedInput = Regex.Replace(s, "[^a-zA-Z0-9 ]", string.Empty);
@@ -116,7 +116,7 @@ namespace Penthouse_Security
 
             foreach (var word in splittedInput)
             {
-                output += convertWord(word);
+                output += ConvertWord(word);
                 output += "  ";
             }
 

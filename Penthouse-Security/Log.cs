@@ -56,15 +56,13 @@ namespace Penthouse_Security
                     return "CRI";
                 case LogSeverity.Debug:
                     return "DBG";
-                case LogSeverity.Error:
-                    Console.BackgroundColor = ConsoleColor.DarkRed;
+                case LogSeverity.Error:                    
                     return "ERR";
                 case LogSeverity.Info:
                     return "INF";
                 case LogSeverity.Verbose:
                     return "VRB";
-                case LogSeverity.Warning:
-                    Console.BackgroundColor = ConsoleColor.DarkYellow;
+                case LogSeverity.Warning:                    
                     return "WRN";
                 default:
                     return "Unknown";
