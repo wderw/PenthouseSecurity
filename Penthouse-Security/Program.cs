@@ -8,14 +8,14 @@ using System.Timers;
 
 namespace Penthouse_Security
 {
-    class Application
+    class Program
     {
         DiscordSocketClient client;
         CommandHandler handler;
         internal static Services services;
 
         public static void Main(string[] args)
-        => new Application().StartAsync().GetAwaiter().GetResult();
+        => new Program().StartAsync().GetAwaiter().GetResult();
 
         private async Task StartAsync()
         {

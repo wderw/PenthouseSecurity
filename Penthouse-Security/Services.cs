@@ -13,12 +13,12 @@ namespace Penthouse_Security
         {
             get
             {
-                if(Application.services == null)
+                if(Program.services == null)
                 {
                     Log.Error("Fatal error: Services not initialized!");
                     throw new SystemException();
                 }
-                return Application.services;
+                return Program.services;
             }
         }
 
