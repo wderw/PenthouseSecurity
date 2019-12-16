@@ -221,8 +221,8 @@ namespace Penthouse_Security
         [Command("stats")]
         public async Task SpinCount()
         {
-            var spinCount = await services.slotmachine.GetSpinCount();
-            await Context.Channel.SendMessageAsync("We did " + spinCount + " spins.");
+            Embed stats = await services.slotmachine.SpinStats();
+            await Context.Channel.SendMessageAsync("", false, stats);
         }
     }
 }

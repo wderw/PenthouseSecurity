@@ -27,17 +27,6 @@ namespace Penthouse_Security
             this.dbConnector = dbConnector ?? throw new ArgumentNullException("dbConnector");
         }
 
-        public async Task<int> GetSpinCount()
-        {
-            var spinCollection = dbConnector.GetSpinCollection();
-
-            var filter = new BsonDocument("name", "spinCount");
-
-            var document = await spinCollection.Find(filter).Limit(1).SingleAsync();
-            Log.Warning(document.GetElement("spinCount").Value.AsInt32.ToString());
-            return document.GetElement("spinCount").Value.AsInt32;
-        }
-
         public static async Task<Embed> SlotDescription()
         {
             var description = new EmbedBuilder();
@@ -55,20 +44,29 @@ namespace Penthouse_Security
             return description.Build();
         }
 
-        public async void IncrementSpins()
+        public async Task<int> GetMetric(string metricType, string fieldName)
         {
-            var currentSpinCount = await GetSpinCount();
-            currentSpinCount++;
+            var spinCollection = dbConnector.GetSpinCollection();
+            var filter = new BsonDocument("metricType", metricType);
+            var document = await spinCollection.Find(filter).Limit(1).SingleAsync();
+
+            return document.GetElement(fieldName).Value.AsInt32;
+        }
+
+        public async void IncrementMetric(string metricType, string fieldName)
+        {
+            var currentCount = await GetMetric(metricType, fieldName);
+            currentCount++;
 
             var spinCollection = dbConnector.GetSpinCollection();
-            var filter = Builders<BsonDocument>.Filter.Eq("name", "spinCount");
-            var update = Builders<BsonDocument>.Update.Set("spinCount", currentSpinCount);
+            var filter = new BsonDocument("metricType", metricType);
+            var update = Builders<BsonDocument>.Update.Set(fieldName, currentCount);
             spinCollection.UpdateOne(filter, update);
         }
 
         public async Task<string> Spin()
         {
-            IncrementSpins();
+            IncrementMetric("general", "spinCount");
 
             var result = new StringBuilder();
 
@@ -87,15 +85,19 @@ namespace Penthouse_Security
                 {
                     case 1:
                         result.Append("Twoje combo to: **czeresniakowa trujca**");
+                        IncrementMetric("combos", "czeresniakowa trujca");
                         break;
                     case 2:
                         result.Append("Twoje combo to: **gemixowy full**");
+                        IncrementMetric("combos", "gemixowy full");
                         break;
                     case 3:
                         result.Append("Twoje combo to: **karoca generala pedala**");
+                        IncrementMetric("combos", "karoca generala pedala");
                         break;
                     default:
                         result.Append("Twoje combo to: **pełny cebularski frajer**");
+                        IncrementMetric("combos", "pełny cebularski frajer");
                         break;
                 }
                 result.AppendLine();
@@ -103,10 +105,10 @@ namespace Penthouse_Security
             } // triple
 
             result.AppendLine();
-            if (score == 210) { result.Append("Twoje combo to: **full retard**"); return result.ToString(); }
-            if (score == 1200) { result.Append("Twoje combo to: **mala sciera**"); return result.ToString(); }
-            if (score == 2100) { result.Append("Twoje combo to: **duza sciera**"); return result.ToString(); }
-            if (score == 21 || score == 120 || score == 1020) { result.Append("Twoje combo to: **participation trophy**"); return result.ToString(); }
+            if (score == 210) { result.Append("Twoje combo to: **full retard**"); IncrementMetric("combos", "full retard"); return result.ToString(); }
+            if (score == 1200) { result.Append("Twoje combo to: **mala sciera**"); IncrementMetric("combos", "mala sciera"); return result.ToString(); }
+            if (score == 2100) { result.Append("Twoje combo to: **duza sciera**"); IncrementMetric("combos", "duza sciera"); return result.ToString(); }
+            if (score == 21 || score == 120 || score == 1020) { result.Append("Twoje combo to: **participation trophy**"); IncrementMetric("combos", "participation trophy"); return result.ToString(); }
 
             return result.ToString();
         }
@@ -129,6 +131,33 @@ namespace Penthouse_Security
             {
                 return 0;
             }                
+        }
+
+        internal async Task<Embed> SpinStats()
+        {
+            var spinCount = await GetMetric("general", "spinCount");
+            double cebulas = await GetMetric("combos", "pełny cebularski frajer"); string cebulasRatio = (cebulas / spinCount).ToString("N3");
+            double participation = await GetMetric("combos", "participation trophy"); string participationRatio = (participation / spinCount).ToString("N3");
+            double czeresniakowa = await GetMetric("combos", "czeresniakowa trujca"); string czeresniakowaRatio = (czeresniakowa / spinCount).ToString("N3");
+            double fullretard = await GetMetric("combos", "full retard"); string fullretardRatio = (fullretard / spinCount).ToString("N3");
+            double gemixowyfull = await GetMetric("combos", "gemixowy full"); string gemixowyfullRatio = (gemixowyfull / spinCount).ToString("N3");
+            double malasciera = await GetMetric("combos", "mala sciera"); string malascieraRatio = (malasciera / spinCount).ToString("N3");
+            double duzasciera = await GetMetric("combos", "duza sciera"); string duzascieraRatio = (duzasciera / spinCount).ToString("N3");
+            double karoca = await GetMetric("combos", "karoca generala pedala"); string karocaRatio = (karoca / spinCount).ToString("N5");
+
+            var stats = new EmbedBuilder();
+
+            stats.WithTitle("**Statsy slutmaszina (Total spins: " + spinCount + "):**");
+            stats.AddField("1) " + ":onion: :onion: :onion:" + " - pełny cebularski frajer", cebulas.ToString() + " (" + cebulasRatio + "%)", false);
+            stats.AddField("2) " + ":cherries: :cherries: :grey_question: - participation trophy", participation.ToString() + " (" + participationRatio + "%)", false);
+            stats.AddField("3) " + ":cherries: :cherries: :cherries: - czeresniakowa trujca", czeresniakowa.ToString() + " (" + czeresniakowaRatio + "%)", false);
+            stats.AddField("4) " + ":gem: :gem: :cherries: - full retard", fullretard.ToString() + " (" + fullretardRatio + "%)", false);
+            stats.AddField("5) " + ":gem: :gem: :gem: - gemixowy full", gemixowyfull.ToString() + " (" + gemixowyfullRatio + "%)", false);
+            stats.AddField("6) " + ":seven: :gem: :gem: - mala sciera", malasciera.ToString() + " (" + malascieraRatio + "%)", false);
+            stats.AddField("7) " + ":seven: :seven: :gem: - duza sciera", duzasciera.ToString() + " (" + duzascieraRatio + "%)", false);
+            stats.AddField("8) " + ":seven: :seven: :seven: - karoca generala pedala", karoca.ToString() + " (" + karocaRatio + "%)", false);
+
+            return stats.Build();
         }
     }
 }
