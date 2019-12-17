@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace Penthouse_Security
 {
-    public class CallbackScheduler
+    public class CallbackTimer
     {
         private event Action callback;
         private int interval;
 
-        public CallbackScheduler(int interval, Action callback)
+        public CallbackTimer(int interval, Action callback)
         {
             this.interval = interval;
             this.callback = callback;

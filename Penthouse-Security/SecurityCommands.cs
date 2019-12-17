@@ -62,8 +62,8 @@ namespace Penthouse_Security
         public async Task Parse([Remainder] string message)
         {
             await Context.Message.DeleteAsync();
-            string outputMessage = services.letterParser.Parse(message);
-            await Context.Channel.SendMessageAsync("**" + Context.User.Username + "**: " + outputMessage);
+            string parsedMessage = services.letterParser.Parse(message);
+            await Context.Channel.SendMessageAsync("**" + Context.User.Username + "**: " + parsedMessage);
         }
 
         [Command("roll")]
@@ -122,7 +122,7 @@ namespace Penthouse_Security
         {
             var weatherService = services.weatherService;
             string jsonResponse;
-            string url = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&APPID=53bbda84142d7bb7062a43eabe3ea303";
+            string url = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&APPID=" + weatherService.openWeatherAppId;
 
             try
             {
@@ -165,7 +165,7 @@ namespace Penthouse_Security
         {
             var weatherService = services.weatherService;
             string jsonResponse;
-            string url = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&APPID=53bbda84142d7bb7062a43eabe3ea303";
+            string url = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&APPID=" + weatherService.openWeatherAppId;
 
             try
             {
@@ -206,7 +206,7 @@ namespace Penthouse_Security
         [Command("spin")]
         public async Task SlotmachineSpin()
         {
-            Task<string> result = services.slotmachine.Spin();            
+            Task<string> result = services.slotmachine.Spin();
             string username = Context.User.Username;
             await Context.Channel.SendMessageAsync(username + " has rolled:\n" + result.Result);
         }
@@ -214,7 +214,7 @@ namespace Penthouse_Security
         [Command("slots")]
         public async Task SlotmachineDescribe()
         {
-            Embed description = await Slotmachine.SlotDescription();
+            Embed description = await services.slotmachine.SlotDescription();
             await Context.Channel.SendMessageAsync("", false, description);
         }
 

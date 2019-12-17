@@ -22,6 +22,24 @@ namespace Penthouse_Security
 
         public LetterParser() {}
 
+        public string Parse(string inputString)
+        {
+            var s = Regex.Replace(inputString, "[A-Z]", m => m.ToString().ToLower());
+            var fixedInput = Regex.Replace(s, "[^a-zA-Z0-9 ]", string.Empty);
+
+            var splittedInput = fixedInput.Split(' ');
+
+            string output = "";
+
+            foreach (var word in splittedInput)
+            {
+                output += ConvertWord(word);
+                output += "  ";
+            }
+
+            return output;
+        }
+
         private bool CharIsANumber(char c)
         {
             return c >= 48 && c <= 57;
@@ -100,24 +118,6 @@ namespace Penthouse_Security
                     continue;
 
                 output += WrapString(character.Value);
-            }
-
-            return output;
-        }
-
-        public string Parse(string inputString)
-        {
-            var s = Regex.Replace(inputString, "[A-Z]", m => m.ToString().ToLower());
-            var fixedInput = Regex.Replace(s, "[^a-zA-Z0-9 ]", string.Empty);
-
-            var splittedInput = fixedInput.Split(' ');
-            
-            string output = "";
-
-            foreach (var word in splittedInput)
-            {
-                output += ConvertWord(word);
-                output += "  ";
             }
 
             return output;

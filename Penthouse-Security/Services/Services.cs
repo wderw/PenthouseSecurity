@@ -20,13 +20,12 @@ namespace Penthouse_Security
                 }
                 return Program.services;
             }
-        }
+        }        
 
         internal Slotmachine slotmachine { get; }
         internal WeatherService weatherService { get; }
         internal LetterParser letterParser { get; }
         internal DatabaseConnector dbConnector { get; }
-        internal Random random { get; }
         internal PapaModule papaModule { get; }
 
         public Services(DiscordSocketClient discordClient, string mongoPasswd)
@@ -39,8 +38,8 @@ namespace Penthouse_Security
             letterParser = new LetterParser();
             slotmachine = new Slotmachine(dbConnector);
             weatherService = new WeatherService();
-            papaModule = new PapaModule(discordClient);
-
+            papaModule = new PapaModule(discordClient); 
+            
             Log.Info("All services running.");
             Utils.MarkStartupTime();
         }

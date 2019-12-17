@@ -7,9 +7,10 @@ namespace Penthouse_Security
 {
     class PapaModule
     {
+        CallbackTimer timer;
         public PapaModule(DiscordSocketClient discordClient)
         {
-            new CallbackScheduler(10000, () =>
+            timer = new CallbackTimer(10000, () =>
             {
                 ulong id = 0;
                 foreach (SocketGuild g in discordClient.Guilds)

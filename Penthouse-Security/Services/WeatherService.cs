@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ namespace Penthouse_Security
 {
     class WeatherService
     {
+        private class InvalidAppIdException : Exception { }
         private struct WeatherInfo
         {
             public int temperature;
@@ -41,6 +43,19 @@ namespace Penthouse_Security
             { 803, new QuickInfo("rozjebane chmury sa podobno.", ":cloud:")},
             { 804, new QuickInfo("chuja widac.", ":cloud:")},
         };
+
+        public string openWeatherAppId { get; }
+
+        public WeatherService()
+        {
+            openWeatherAppId = Environment.GetEnvironmentVariable(Config.vars["openWeatherAppId"]);
+
+            if (openWeatherAppId == "" || openWeatherAppId == null)
+            {
+                Log.Error("Open weather AppId is invalid!");
+                throw new InvalidAppIdException();
+            }
+        }
 
         public async Task<string> GetWeather(string url)
         {

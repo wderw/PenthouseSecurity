@@ -59,6 +59,7 @@ namespace Penthouse_Security
 
             return token;
         }
+
         private class InvalidBotTokenException : Exception {}
         private class InvalidBotPasswordException : Exception {}
 

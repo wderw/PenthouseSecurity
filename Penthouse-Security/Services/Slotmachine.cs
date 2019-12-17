@@ -27,7 +27,7 @@ namespace Penthouse_Security
             this.dbConnector = dbConnector ?? throw new ArgumentNullException("dbConnector");
         }
 
-        public static async Task<Embed> SlotDescription()
+        public async Task<Embed> SlotDescription()
         {
             var description = new EmbedBuilder();
 
@@ -42,26 +42,6 @@ namespace Penthouse_Security
             description.AddField("8) " + ":seven: :seven: :seven: - karoca generala pedala", "----------", false);
 
             return description.Build();
-        }
-
-        public async Task<int> GetMetric(string metricType, string fieldName)
-        {
-            var spinCollection = dbConnector.GetSpinCollection();
-            var filter = new BsonDocument("metricType", metricType);
-            var document = await spinCollection.Find(filter).Limit(1).SingleAsync();
-
-            return document.GetElement(fieldName).Value.AsInt32;
-        }
-
-        public async void IncrementMetric(string metricType, string fieldName)
-        {
-            var currentCount = await GetMetric(metricType, fieldName);
-            currentCount++;
-
-            var spinCollection = dbConnector.GetSpinCollection();
-            var filter = new BsonDocument("metricType", metricType);
-            var update = Builders<BsonDocument>.Update.Set(fieldName, currentCount);
-            spinCollection.UpdateOne(filter, update);
         }
 
         public async Task<string> Spin()
@@ -158,6 +138,25 @@ namespace Penthouse_Security
             stats.AddField("8) " + ":seven: :seven: :seven: - karoca generala pedala", karoca.ToString() + " (" + karocaRatio + "%)", false);
 
             return stats.Build();
+        }
+        private async Task<int> GetMetric(string metricType, string fieldName)
+        {
+            var spinCollection = dbConnector.GetSpinCollection();
+            var filter = new BsonDocument("metricType", metricType);
+            var document = await spinCollection.Find(filter).Limit(1).SingleAsync();
+
+            return document.GetElement(fieldName).Value.AsInt32;
+        }
+
+        private async void IncrementMetric(string metricType, string fieldName)
+        {
+            var currentCount = await GetMetric(metricType, fieldName);
+            currentCount++;
+
+            var spinCollection = dbConnector.GetSpinCollection();
+            var filter = new BsonDocument("metricType", metricType);
+            var update = Builders<BsonDocument>.Update.Set(fieldName, currentCount);
+            spinCollection.UpdateOne(filter, update);
         }
     }
 }
