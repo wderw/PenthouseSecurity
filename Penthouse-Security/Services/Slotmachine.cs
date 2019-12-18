@@ -44,9 +44,10 @@ namespace Penthouse_Security
             return description.Build();
         }
 
-        public async Task<string> Spin()
+        public async Task<string> Spin(string user)
         {
             IncrementMetric("general", "spinCount");
+            IncrementMetric("general", user);
 
             var result = new StringBuilder();
 
@@ -66,18 +67,22 @@ namespace Penthouse_Security
                     case 1:
                         result.Append("Twoje combo to: **czeresniakowa trujca**");
                         IncrementMetric("combos", "czeresniakowa trujca");
+                        IncrementMetric(user, "czeresniakowa trujca");
                         break;
                     case 2:
                         result.Append("Twoje combo to: **gemixowy full**");
                         IncrementMetric("combos", "gemixowy full");
+                        IncrementMetric(user, "gemixowy full");
                         break;
                     case 3:
                         result.Append("Twoje combo to: **karoca generala pedala**");
                         IncrementMetric("combos", "karoca generala pedala");
+                        IncrementMetric(user, "karoca generala pedala");
                         break;
                     default:
                         result.Append("Twoje combo to: **pełny cebularski frajer**");
                         IncrementMetric("combos", "pełny cebularski frajer");
+                        IncrementMetric(user, "pełny cebularski frajer");
                         break;
                 }
                 result.AppendLine();
@@ -85,10 +90,10 @@ namespace Penthouse_Security
             } // triple
 
             result.AppendLine();
-            if (score == 210) { result.Append("Twoje combo to: **full retard**"); IncrementMetric("combos", "full retard"); return result.ToString(); }
-            if (score == 1200) { result.Append("Twoje combo to: **mala sciera**"); IncrementMetric("combos", "mala sciera"); return result.ToString(); }
-            if (score == 2100) { result.Append("Twoje combo to: **duza sciera**"); IncrementMetric("combos", "duza sciera"); return result.ToString(); }
-            if (score == 21 || score == 120 || score == 1020) { result.Append("Twoje combo to: **participation trophy**"); IncrementMetric("combos", "participation trophy"); return result.ToString(); }
+            if (score == 210) { result.Append("Twoje combo to: **full retard**"); IncrementMetric("combos", "full retard"); IncrementMetric(user, "full retard"); return result.ToString(); }
+            if (score == 1200) { result.Append("Twoje combo to: **mala sciera**"); IncrementMetric("combos", "mala sciera"); IncrementMetric(user, "mala sciera"); return result.ToString(); }
+            if (score == 2100) { result.Append("Twoje combo to: **duza sciera**"); IncrementMetric("combos", "duza sciera"); IncrementMetric(user, "duza sciera"); return result.ToString(); }
+            if (score == 21 || score == 120 || score == 1020) { result.Append("Twoje combo to: **participation trophy**"); IncrementMetric("combos", "participation trophy"); IncrementMetric(user, "participation trophy"); return result.ToString(); }
 
             return result.ToString();
         }
@@ -113,21 +118,42 @@ namespace Penthouse_Security
             }                
         }
 
-        internal async Task<Embed> SpinStats()
+        internal async Task<Embed> SpinStats(string user)
         {
-            var spinCount = await GetMetric("general", "spinCount");
-            double cebulas = await GetMetric("combos", "pełny cebularski frajer"); string cebulasRatio = (cebulas / spinCount).ToString("N3");
-            double participation = await GetMetric("combos", "participation trophy"); string participationRatio = (participation / spinCount).ToString("N3");
-            double czeresniakowa = await GetMetric("combos", "czeresniakowa trujca"); string czeresniakowaRatio = (czeresniakowa / spinCount).ToString("N3");
-            double fullretard = await GetMetric("combos", "full retard"); string fullretardRatio = (fullretard / spinCount).ToString("N3");
-            double gemixowyfull = await GetMetric("combos", "gemixowy full"); string gemixowyfullRatio = (gemixowyfull / spinCount).ToString("N3");
-            double malasciera = await GetMetric("combos", "mala sciera"); string malascieraRatio = (malasciera / spinCount).ToString("N3");
-            double duzasciera = await GetMetric("combos", "duza sciera"); string duzascieraRatio = (duzasciera / spinCount).ToString("N3");
-            double karoca = await GetMetric("combos", "karoca generala pedala"); string karocaRatio = (karoca / spinCount).ToString("N5");
+            if(user == string.Empty) { user = "combos"; }
+
+
+            int spinCount;
+            
+            if(user == "combos")
+            {
+                spinCount = await GetMetric("general", "spinCount");
+            }
+            else
+            {
+                spinCount = await GetMetric("general", user);
+            }
+            
+            double cebulas = await GetMetric(user, "pełny cebularski frajer"); string cebulasRatio = (cebulas / spinCount).ToString("N3");
+            double participation = await GetMetric(user, "participation trophy"); string participationRatio = (participation / spinCount).ToString("N3");
+            double czeresniakowa = await GetMetric(user, "czeresniakowa trujca"); string czeresniakowaRatio = (czeresniakowa / spinCount).ToString("N3");
+            double fullretard = await GetMetric(user, "full retard"); string fullretardRatio = (fullretard / spinCount).ToString("N3");
+            double gemixowyfull = await GetMetric(user, "gemixowy full"); string gemixowyfullRatio = (gemixowyfull / spinCount).ToString("N3");
+            double malasciera = await GetMetric(user, "mala sciera"); string malascieraRatio = (malasciera / spinCount).ToString("N3");
+            double duzasciera = await GetMetric(user, "duza sciera"); string duzascieraRatio = (duzasciera / spinCount).ToString("N3");
+            double karoca = await GetMetric(user, "karoca generala pedala"); string karocaRatio = (karoca / spinCount).ToString("N5");
 
             var stats = new EmbedBuilder();
 
-            stats.WithTitle("**Statsy slutmaszina (Total spins: " + spinCount + "):**");
+            if(user == "combos")
+            {
+                stats.WithTitle("**Statsy slutmaszina (Total spins: " + spinCount + "):**");
+            }
+            else
+            {
+                stats.WithTitle("**Statsy dla: " + user + " (Total spins: " + spinCount + "):**");
+            }
+            
             stats.AddField("1) " + ":onion: :onion: :onion:" + " - pełny cebularski frajer", cebulas.ToString() + " (" + cebulasRatio + "%)", false);
             stats.AddField("2) " + ":cherries: :cherries: :grey_question: - participation trophy", participation.ToString() + " (" + participationRatio + "%)", false);
             stats.AddField("3) " + ":cherries: :cherries: :cherries: - czeresniakowa trujca", czeresniakowa.ToString() + " (" + czeresniakowaRatio + "%)", false);

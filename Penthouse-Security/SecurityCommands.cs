@@ -208,7 +208,7 @@ namespace Penthouse_Security
         {
             if (Program.services.IsSuspended("slotmachine")) return;
 
-            Task<string> result = services.slotmachine.Spin();
+            Task<string> result = services.slotmachine.Spin(Context.User.ToString());
             string username = Context.User.Username;
             await Context.Channel.SendMessageAsync(username + " has rolled:\n" + result.Result);
         }
@@ -223,7 +223,14 @@ namespace Penthouse_Security
         [Command("stats")]
         public async Task SpinCount()
         {
-            Embed stats = await services.slotmachine.SpinStats();
+            Embed stats = await services.slotmachine.SpinStats(string.Empty);
+            await Context.Channel.SendMessageAsync("", false, stats);
+        }
+
+        [Command("mystats")]
+        public async Task MyStats()
+        {
+            Embed stats = await services.slotmachine.SpinStats(Context.User.ToString());
             await Context.Channel.SendMessageAsync("", false, stats);
         }
 
