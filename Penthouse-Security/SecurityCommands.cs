@@ -206,6 +206,8 @@ namespace Penthouse_Security
         [Command("spin")]
         public async Task SlotmachineSpin()
         {
+            if (Program.services.IsSuspended("slotmachine")) return;
+
             Task<string> result = services.slotmachine.Spin();
             string username = Context.User.Username;
             await Context.Channel.SendMessageAsync(username + " has rolled:\n" + result.Result);
@@ -223,6 +225,48 @@ namespace Penthouse_Security
         {
             Embed stats = await services.slotmachine.SpinStats();
             await Context.Channel.SendMessageAsync("", false, stats);
+        }
+
+        [Command("service")]
+        public async Task ServiceCommands([Remainder] string remainder)
+        {
+            if(Context.User.ToString() != "Puhree#2656")
+            {
+                await Context.Channel.SendMessageAsync("Unauthorized madafaka detected.");
+                return;
+            }
+
+            string[] args = remainder.Split(' ');
+
+            if(args.Length != 2)
+            {
+                await Context.Channel.SendMessageAsync("Unknown command");
+                return;
+            }
+
+            string command = args[0];
+            string serviceName = args[1];
+
+            switch (command)
+            {
+                case "suspend":
+                {
+                    Program.services.Suspend(serviceName);
+                    await Context.Channel.SendMessageAsync(serviceName + " suspended.");
+                    break;
+                }
+                case "resume":
+                {
+                    Program.services.Resume(serviceName);
+                    await Context.Channel.SendMessageAsync(serviceName + " resumed.");
+                    break;
+                }
+                default:
+                {
+                    await Context.Channel.SendMessageAsync("Unknown command");
+                    break;
+                }
+            }            
         }
     }
 }
