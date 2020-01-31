@@ -28,6 +28,7 @@ namespace Penthouse_Security
         internal LetterParser letterParser { get; }
         internal DatabaseConnector dbConnector { get; }
         internal PapaModule papaModule { get; }
+        internal WebsiteScraper websiteScraper { get; }
 
         public Services(DiscordSocketClient discordClient, string mongoPasswd)
         {
@@ -40,6 +41,7 @@ namespace Penthouse_Security
             slotmachine = new Slotmachine(dbConnector);
             weatherService = new WeatherService();
             papaModule = new PapaModule(discordClient);
+            websiteScraper = new WebsiteScraper();
 
             suspensionStatus = new Dictionary<string, bool> {{"slotmachine", false}};
 

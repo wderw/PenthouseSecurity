@@ -54,6 +54,7 @@ namespace Penthouse_Security
             helpMessage.AppendLine("!spin - *roll the slot machine*");
             helpMessage.AppendLine("!slots - *slot machine description*");
             helpMessage.AppendLine("!stats - *show spin metrics*");
+            helpMessage.AppendLine("!quranovirus - *show quranovirus infection stats xD*");
 
             await Context.Channel.SendMessageAsync(helpMessage.ToString());
         }
@@ -280,6 +281,13 @@ namespace Penthouse_Security
         public async Task ChineseYear()
         {
             await Context.Channel.SendMessageAsync(":bat: Aktualnie mamy w chinach: ROK BATOPIERZA! :bat:");
+        }
+
+        [Command("quranovirus")]
+        public async Task Quranovirus()
+        {
+            var infectionCounter = await services.websiteScraper.ScrapeWebsite();
+            await Context.Channel.SendMessageAsync(infectionCounter);
         }
     }
 }
