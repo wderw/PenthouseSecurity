@@ -13,11 +13,7 @@ namespace Penthouse_Security
 {
     internal class WebsiteScraper
     {
-        private string title { get; set; }
-        private string url { get; set; }
         private string siteUrl = "https://www.worldometers.info/coronavirus/";
-        //public string[] queryTerms { get; } = { "Ocean", "Nature", "Pollution" };
-
         internal async Task<string> ScrapeWebsite()
         {
             CancellationTokenSource cancellationToken = new CancellationTokenSource();
@@ -33,8 +29,8 @@ namespace Penthouse_Security
 
             if (response != null)
             {
-                var counter = document.All.Where(x => x.ClassName == "maincounter-number");
-                return "Infected: " + counter.First().TextContent;
+                var counter = document.All.Where(x => x.ClassName == "maincounter-number");                
+                return "Infected: " + counter.First().TextContent + ", deaths:" + counter.ToArray()[1].TextContent;
             }
             else
             {
