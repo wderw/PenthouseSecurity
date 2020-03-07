@@ -277,12 +277,6 @@ namespace Penthouse_Security
             }
         }
 
-        [Command("currentyear")]
-        public async Task ChineseYear()
-        {
-            await Context.Channel.SendMessageAsync(":bat: Aktualnie mamy w chinach: ROK BATOPIERZA! :bat:");
-        }
-
         [Command("quranovirus")]
         public async Task Quranovirus()
         {

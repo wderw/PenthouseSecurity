@@ -13,6 +13,10 @@ namespace Penthouse_Security
 {
     internal class WebsiteScraper
     {
+        private const int totalCases = 0;
+        private const int deaths = 1;
+        private const int recovered = 2;
+
         private string siteUrl = "https://www.worldometers.info/coronavirus/";
         internal async Task<string> ScrapeWebsite()
         {
@@ -29,8 +33,24 @@ namespace Penthouse_Security
 
             if (response != null)
             {
-                var counter = document.All.Where(x => x.ClassName == "maincounter-number");                
-                return "Infected:" + counter.First().TextContent + ", deaths:" + counter.ToArray()[1].TextContent;
+                var activeCasesCounter = document.All.Where(x => x.ClassName == "number-table-main").ToArray();
+                var counter = document.All.Where(x => x.ClassName == "maincounter-number").ToArray();
+
+                var totalCount = Double.Parse(counter[totalCases].TextContent.Replace(",", "").Trim());
+                var activeCount = Double.Parse(activeCasesCounter.First().TextContent.Replace(",", "").Trim());
+                var deathsCount = Double.Parse(counter[deaths].TextContent.Replace(",", "").Trim());
+                var recoveredCount = Double.Parse(counter[recovered].TextContent.Replace(",", "").Trim());
+
+                int activePercentage = Convert.ToInt32(100 * activeCount / totalCount);
+                int deathsPercentage = Convert.ToInt32(100 * deathsCount / totalCount);
+                int recoveredPercentage = Convert.ToInt32(100 * recoveredCount / totalCount);
+
+                Log.Debug(Convert.ToInt32((activePercentage * 100)).ToString());
+
+                return "Total cases:"     + counter[totalCases].TextContent +
+                       ", active cases: " + activeCasesCounter.First().TextContent + " `(" + activePercentage + "%)`" +
+                       ", deaths: "       + counter[deaths].TextContent + " `(" + deathsPercentage + "%)`" +
+                       ", recovered: "    + counter[recovered].TextContent + " `(" + recoveredPercentage + "%)`";
             }
             else
             {
