@@ -29,6 +29,7 @@ namespace Penthouse_Security
         internal DatabaseConnector dbConnector { get; }
         internal PapaModule papaModule { get; }
         internal WebsiteScraper websiteScraper { get; }
+        internal MiasmaInfoservice miasmaInfoservice { get; }
 
         public Services(DiscordSocketClient discordClient, string mongoPasswd)
         {
@@ -42,6 +43,7 @@ namespace Penthouse_Security
             weatherService = new WeatherService();
             papaModule = new PapaModule(discordClient);
             websiteScraper = new WebsiteScraper();
+            miasmaInfoservice = new MiasmaInfoservice(websiteScraper);
 
             suspensionStatus = new Dictionary<string, bool> {{"slotmachine", false}};
 

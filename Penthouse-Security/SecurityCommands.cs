@@ -280,8 +280,15 @@ namespace Penthouse_Security
         [Command("quranovirus")]
         public async Task Quranovirus()
         {
-            var infectionCounter = await services.websiteScraper.ScrapeWebsite();
-            await Context.Channel.SendMessageAsync(infectionCounter);
+            var infectionCounter = services.miasmaInfoservice.MiasmaTotals();
+            await Context.Channel.SendMessageAsync(infectionCounter.Result);
+        }
+
+        [Command("quranostats")]
+        public async Task Miasma([Remainder] string country)
+        {
+            var miasmaByCountry = services.miasmaInfoservice.MiasmaByCountry(country);
+            await Context.Channel.SendMessageAsync(miasmaByCountry.Result);
         }
     }
 }
