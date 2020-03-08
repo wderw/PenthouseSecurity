@@ -290,5 +290,12 @@ namespace Penthouse_Security
             var miasmaByCountry = services.miasmaInfoservice.MiasmaByCountry(country);
             await Context.Channel.SendMessageAsync(miasmaByCountry.Result);
         }
+
+        [Command("quranotop10")]
+        public async Task MiasmaTop10()
+        {
+            var miasmaTop10 = services.miasmaInfoservice.MiasmaTop10();
+            await Context.Channel.SendMessageAsync(miasmaTop10.Result);
+        }
     }
 }

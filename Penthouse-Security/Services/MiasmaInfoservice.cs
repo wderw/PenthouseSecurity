@@ -20,7 +20,7 @@ namespace Penthouse_Security
             const int deaths = 1;
             const int recovered = 2;
 
-            var document = await websiteScraper.ScrapeWebsite("https://www.worldometers.info/coronavirus/");
+            var document = await websiteScraper.ScrapeWebsite(Config.vars["coronaSiteUrl"]);
 
             var activeCasesCounter = document.All.Where(x => x.ClassName == "number-table-main").ToArray();
             var counter = document.All.Where(x => x.ClassName == "maincounter-number").ToArray();            
@@ -41,16 +41,42 @@ namespace Penthouse_Security
                 ", recovered: " + counter[recovered].TextContent + " `(" + recoveredPercentage + "%)`";
         }
 
+        public async Task<string> MiasmaTop10()
+        {
+            var document = await websiteScraper.ScrapeWebsite(Config.vars["coronaSiteUrl"]);
+            var countryTable = document.All.Where(x => x.Id == "main_table_countries").First();
+            var tableBody = countryTable.Children[1];
+
+            var result = new StringBuilder();
+
+            result.AppendLine("__Quranovirus Top10__");
+            result.AppendLine();
+
+            for (int i = 0; i < 10; ++i)
+            {
+                var entry = tableBody.Children[i];
+                var columns = entry.Children;
+
+                result.Append("#" + (i + 1).ToString());
+                result.Append("  *");
+                result.Append(columns[0].TextContent.Trim() + "*  (");
+                if (columns[1].TextContent.Trim().Length != 0) result.Append(columns[1].TextContent.Trim() + ")");
+
+                if (i == 0) result.Append(":first_place:");
+                if (i == 1) result.Append(":second_place:");
+                if (i == 2) result.Append(":third_place:");
+
+                result.AppendLine();
+            }
+            return result.ToString();
+        }
+
         public async Task<string> MiasmaByCountry(string country)
         {
-            //const int header = 0;
             const int countries = 1;
 
-            var document = await websiteScraper.ScrapeWebsite("https://www.worldometers.info/coronavirus/");
-
+            var document = await websiteScraper.ScrapeWebsite(Config.vars["coronaSiteUrl"]);
             var countryTable = document.All.Where(x => x.Id == "main_table_countries").First();
-
-            //var tableHeader = polsza.Children[header];
             var tableBody = countryTable.Children[1];
 
             for(int i = 0; i < tableBody.Children.Length; ++i)
@@ -59,7 +85,6 @@ namespace Penthouse_Security
                 var columns = entry.Children;
                 if(entry.TextContent.ToLower().Contains(country.ToLower()))
                 {
-
                     var result = new StringBuilder();
                     result.AppendLine("__Quranovirus stats for: **" + columns[0].TextContent.Trim() + "**__");
                     result.AppendLine();
@@ -69,6 +94,8 @@ namespace Penthouse_Security
                     if (columns[4].TextContent.Trim().Length != 0) result.AppendLine("New Deaths: " + columns[4].TextContent.Trim());
                     if (columns[5].TextContent.Trim().Length != 0) result.AppendLine("Total Recovered: " + columns[5].TextContent.Trim());
                     if (columns[6].TextContent.Trim().Length != 0) result.AppendLine("Active Cases: " + columns[6].TextContent.Trim());
+                    result.AppendLine();
+                    result.AppendLine("Rank: **#" + (i + 1).ToString() + "**");
 
                     return result.ToString();
                 }                

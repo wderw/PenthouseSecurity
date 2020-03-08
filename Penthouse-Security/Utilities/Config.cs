@@ -15,7 +15,8 @@ namespace Penthouse_Security
             { "okragly_stul_jp2", "<:jp2:275394520563187715>" },
             { "ogólny_jp2", "<:jp2:607634357439692800>" },
             { "discordApiLogTag", "[DISCORD API]" },
-            { "applicationLogTag", "[APPLICATION]" }
+            { "applicationLogTag", "[APPLICATION]" },
+            { "coronaSiteUrl" , "https://www.worldometers.info/coronavirus/" }
         };
     }
 }
