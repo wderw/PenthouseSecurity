@@ -283,6 +283,12 @@ namespace Penthouse_Security
         [Command("quranovirus")]
         public async Task Quranovirus()
         {
+            if(Context.Channel.Name == "okragly_stul")
+            {
+                await Context.Channel.SendMessageAsync("Tu mi kaganiec zalozyli.");
+                return;
+            }
+
             var infectionCounter = services.miasmaInfoservice.MiasmaTotals();
             await Context.Channel.SendMessageAsync(infectionCounter.Result);
         }
@@ -290,6 +296,12 @@ namespace Penthouse_Security
         [Command("quranostats")]
         public async Task Miasma([Remainder] string country)
         {
+            if (Context.Channel.Name == "okragly_stul")
+            {
+                await Context.Channel.SendMessageAsync("Tu mi kaganiec zalozyli.");
+                return;
+            }
+
             var miasmaByCountry = services.miasmaInfoservice.MiasmaByCountry(country);
             await Context.Channel.SendMessageAsync(miasmaByCountry.Result);
         }
@@ -297,6 +309,12 @@ namespace Penthouse_Security
         [Command("quranotop10")]
         public async Task MiasmaTop10()
         {
+            if (Context.Channel.Name == "okragly_stul" || Context.Channel.Name == "dev")
+            {
+                await Context.Channel.SendMessageAsync("Tu mi kaganiec zalozyli.");
+                return;
+            }
+
             var miasmaTop10 = services.miasmaInfoservice.MiasmaTop10();
             await Context.Channel.SendMessageAsync(miasmaTop10.Result);
         }
