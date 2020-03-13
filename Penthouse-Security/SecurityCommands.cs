@@ -309,7 +309,7 @@ namespace Penthouse_Security
         [Command("quranotop10")]
         public async Task MiasmaTop10()
         {
-            if (Context.Channel.Name == "okragly_stul" || Context.Channel.Name == "dev")
+            if (Context.Channel.Name == "okragly_stul")
             {
                 await Context.Channel.SendMessageAsync("Tu mi kaganiec zalozyli.");
                 return;
@@ -317,6 +317,19 @@ namespace Penthouse_Security
 
             var miasmaTop10 = services.miasmaInfoservice.MiasmaTop10();
             await Context.Channel.SendMessageAsync(miasmaTop10.Result);
+        }
+
+        [Command("quranorank")]
+        public async Task MiasmaRank([Remainder] string rank)
+        {
+            if (Context.Channel.Name == "okragly_stul")
+            {
+                await Context.Channel.SendMessageAsync("Tu mi kaganiec zalozyli.");
+                return;
+            }
+
+            var miasmaRank = services.miasmaInfoservice.MiasmaRank(rank);
+            await Context.Channel.SendMessageAsync(miasmaRank.Result);
         }
     }
 }

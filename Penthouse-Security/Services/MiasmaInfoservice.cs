@@ -102,5 +102,29 @@ namespace Penthouse_Security
             }
             return "Ale wpisz kurwa pajacu porzadnie to kauntry, z duzej jebanej litery i po angielsku jak pan bug przykazal.";            
         }
+
+        public async Task<string> MiasmaRank(string rank)
+        {
+            int iRank = int.Parse(rank);
+                        
+            var document = await websiteScraper.ScrapeWebsite(Config.vars["coronaSiteUrl"]);
+            var countryTable = document.All.Where(x => x.Id == "main_table_countries").First();
+            var tableBody = countryTable.Children[1];
+
+            var result = new StringBuilder();
+
+            result.AppendLine("__Quranovirus at rank: **#" + iRank + "**__");
+            result.AppendLine();
+
+            var entry = tableBody.Children[iRank - 1];
+            var columns = entry.Children;
+
+            result.Append(columns[0].TextContent.Trim() + " (");
+            if (columns[1].TextContent.Trim().Length != 0) result.Append(columns[1].TextContent.Trim() + " cases)");
+
+            result.AppendLine();
+
+            return result.ToString();
+        }
     }
 }
