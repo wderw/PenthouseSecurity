@@ -283,7 +283,7 @@ namespace Penthouse_Security
         [Command("quranovirus")]
         public async Task Quranovirus()
         {
-            if(Context.Channel.Name == "okragly_stul")
+            if (Context.Channel.Name == "okragly_stul")
             {
                 await Context.Channel.SendMessageAsync("Tu mi kaganiec zalozyli.");
                 return;
@@ -330,6 +330,30 @@ namespace Penthouse_Security
 
             var miasmaRank = services.miasmaInfoservice.MiasmaRank(rank);
             await Context.Channel.SendMessageAsync(miasmaRank.Result);
+        }
+
+        [Command("qrank")]
+        public async Task MiasmaRankShorthandle([Remainder] string rank)
+        {
+            await MiasmaRank(rank);
+        }
+
+        [Command("qvirus")]
+        public async Task MiasmaShorthandle()
+        {
+            await Quranovirus();
+        }
+
+        [Command("qstats")]
+        public async Task MiasmaByCountryShorthandle([Remainder] string country)
+        {
+            await Miasma(country);
+        }
+
+        [Command("qtop10")]
+        public async Task MiasmaTop10Shorthandle()
+        {
+            await MiasmaTop10();
         }
     }
 }
