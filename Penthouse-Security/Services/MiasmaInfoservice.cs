@@ -44,7 +44,7 @@ namespace Penthouse_Security
         public async Task<string> MiasmaTop10()
         {
             var document = await websiteScraper.ScrapeWebsite(Config.vars["coronaSiteUrl"]);
-            var countryTable = document.All.Where(x => x.Id == "main_table_countries").First();
+            var countryTable = document.All.Where(x => x.Id == "main_table_countries_today").First();
             var tableBody = countryTable.Children[1];
 
             var result = new StringBuilder();
@@ -71,12 +71,20 @@ namespace Penthouse_Security
             return result.ToString();
         }
 
-        public async Task<string> MiasmaByCountry(string country)
+        public async Task<string> MiasmaByCountryAndDay(string country, string day)
         {
             const int countries = 1;
+            string areYesterdaysStats = "";
+
+            string table_html_element = "main_table_countries_today";
+            if (day == "yesterday")
+            {
+                table_html_element = "main_table_countries_yesterday";
+                areYesterdaysStats = " ***(yesterday)***";
+            }
 
             var document = await websiteScraper.ScrapeWebsite(Config.vars["coronaSiteUrl"]);
-            var countryTable = document.All.Where(x => x.Id == "main_table_countries").First();
+            var countryTable = document.All.Where(x => x.Id == table_html_element).First();
             var tableBody = countryTable.Children[1];
 
             for(int i = 0; i < tableBody.Children.Length; ++i)
@@ -86,7 +94,7 @@ namespace Penthouse_Security
                 if(entry.TextContent.ToLower().Contains(country.ToLower()))
                 {
                     var result = new StringBuilder();
-                    result.AppendLine("__Quranovirus stats for: **" + columns[0].TextContent.Trim() + "**__");
+                    result.AppendLine("__Quranovirus stats for: **" + columns[0].TextContent.Trim() + "**__" + areYesterdaysStats);
                     result.AppendLine();
                     if (columns[1].TextContent.Trim().Length != 0) result.AppendLine("Total Cases: " + columns[1].TextContent.Trim());
                     if (columns[2].TextContent.Trim().Length != 0) result.AppendLine("New Cases: " + columns[2].TextContent.Trim());
@@ -108,7 +116,7 @@ namespace Penthouse_Security
             int iRank = int.Parse(rank);
                         
             var document = await websiteScraper.ScrapeWebsite(Config.vars["coronaSiteUrl"]);
-            var countryTable = document.All.Where(x => x.Id == "main_table_countries").First();
+            var countryTable = document.All.Where(x => x.Id == "main_table_countries_today").First();
             var tableBody = countryTable.Children[1];
 
             var result = new StringBuilder();

@@ -294,15 +294,33 @@ namespace Penthouse_Security
         }
 
         [Command("quranostats")]
-        public async Task Miasma([Remainder] string country)
+        public async Task Miasma([Remainder] string remainder)
         {
             if (Context.Channel.Name == "okragly_stul")
             {
                 await Context.Channel.SendMessageAsync("Tu mi kaganiec zalozyli.");
                 return;
             }
+            
+            string[] args = remainder.Split(' ');
+            if(args.Length > 2)
+            {
+                await Context.Channel.SendMessageAsync("Too many parameters.");
+                return;
+            }
 
-            var miasmaByCountry = services.miasmaInfoservice.MiasmaByCountry(country);
+            string country = args[0];
+            string day = "";
+            try
+            {
+                day = args[1];
+            }
+            catch(Exception e)
+            {
+                day = "";
+            }
+
+            var miasmaByCountry = services.miasmaInfoservice.MiasmaByCountryAndDay(country, day);
             await Context.Channel.SendMessageAsync(miasmaByCountry.Result);
         }
 
@@ -345,9 +363,9 @@ namespace Penthouse_Security
         }
 
         [Command("qstats")]
-        public async Task MiasmaByCountryShorthandle([Remainder] string country)
+        public async Task MiasmaByCountryShorthandle([Remainder] string remainder)
         {
-            await Miasma(country);
+            await Miasma(remainder);
         }
 
         [Command("qtop10")]
