@@ -324,8 +324,8 @@ namespace Penthouse_Security
             await Context.Channel.SendMessageAsync(miasmaByCountry.Result);
         }
 
-        [Command("quranotop10")]
-        public async Task MiasmaTop10()
+        [Command("quranotop")]
+        public async Task MiasmaTop10([Remainder] string remainder)
         {
             if (Context.Channel.Name == "okragly_stul")
             {
@@ -333,7 +333,7 @@ namespace Penthouse_Security
                 return;
             }
 
-            var miasmaTop10 = services.miasmaInfoservice.MiasmaTop10();
+            var miasmaTop10 = services.miasmaInfoservice.MiasmaTop10(remainder);
             await Context.Channel.SendMessageAsync(miasmaTop10.Result);
         }
 
@@ -368,10 +368,10 @@ namespace Penthouse_Security
             await Miasma(remainder);
         }
 
-        [Command("qtop10")]
-        public async Task MiasmaTop10Shorthandle()
+        [Command("qtop")]
+        public async Task MiasmaTop10Shorthandle([Remainder] string remainder)
         {
-            await MiasmaTop10();
+            await MiasmaTop10(remainder);
         }
     }
 }

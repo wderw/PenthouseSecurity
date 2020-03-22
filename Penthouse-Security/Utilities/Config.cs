@@ -16,7 +16,8 @@ namespace Penthouse_Security
             { "ogólny_jp2", "<:jp2:607634357439692800>" },
             { "discordApiLogTag", "[DISCORD API]" },
             { "applicationLogTag", "[APPLICATION]" },
-            { "coronaSiteUrl" , "https://www.worldometers.info/coronavirus/" }
+            { "coronaSiteUrl" , "https://www.worldometers.info/coronavirus/" },
+            { "coronaSiteUrlStates" , "https://www.worldometers.info/coronavirus/country/us/" }
         };
     }
 }

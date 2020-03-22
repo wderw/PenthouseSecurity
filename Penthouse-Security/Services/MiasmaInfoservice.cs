@@ -41,10 +41,13 @@ namespace Penthouse_Security
                 ", recovered: " + counter[recovered].TextContent + " `(" + recoveredPercentage + "%)`";
         }
 
-        public async Task<string> MiasmaTop10()
+        public async Task<string> MiasmaTop10(string forStates)
         {
-            var document = await websiteScraper.ScrapeWebsite(Config.vars["coronaSiteUrl"]);
-            var countryTable = document.All.Where(x => x.Id == "main_table_countries_today").First();
+            var siteToScrape = forStates == "states" ? "coronaSiteUrlStates" : "coronaSiteUrl";
+            var idOfTableDivElement = forStates == "states" ? "usa_table_countries_today" : "main_table_countries_today";
+
+            var document = await websiteScraper.ScrapeWebsite(Config.vars[siteToScrape]);
+            var countryTable = document.All.Where(x => x.Id == idOfTableDivElement).First();
             var tableBody = countryTable.Children[1];
 
             var result = new StringBuilder();
@@ -77,7 +80,7 @@ namespace Penthouse_Security
             string areYesterdaysStats = "";
 
             string table_html_element = "main_table_countries_today";
-            if (day == "yesterday")
+            if (day == "yesterday" || day == "yday")
             {
                 table_html_element = "main_table_countries_yesterday";
                 areYesterdaysStats = " ***(yesterday)***";
