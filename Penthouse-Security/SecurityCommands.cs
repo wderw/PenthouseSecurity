@@ -280,7 +280,7 @@ namespace Penthouse_Security
             }
         }
 
-        [Command("quranovirus")]
+        [Command("qvirus")]
         public async Task Quranovirus()
         {
             if (Context.Channel.Name == "okragly_stul")
@@ -293,7 +293,7 @@ namespace Penthouse_Security
             await Context.Channel.SendMessageAsync(infectionCounter.Result);
         }
 
-        [Command("quranostats")]
+        [Command("qstats")]
         public async Task Miasma([Remainder] string remainder)
         {
             if (Context.Channel.Name == "okragly_stul")
@@ -301,9 +301,9 @@ namespace Penthouse_Security
                 await Context.Channel.SendMessageAsync("Tu mi kaganiec zalozyli.");
                 return;
             }
-            
+
             string[] args = remainder.Split(' ');
-            if(args.Length > 2)
+            if (args.Length > 2)
             {
                 await Context.Channel.SendMessageAsync("Too many parameters.");
                 return;
@@ -315,7 +315,7 @@ namespace Penthouse_Security
             {
                 day = args[1];
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 day = "";
             }
@@ -324,8 +324,8 @@ namespace Penthouse_Security
             await Context.Channel.SendMessageAsync(miasmaByCountry.Result);
         }
 
-        [Command("quranotop")]
-        public async Task MiasmaTop10([Remainder] string remainder)
+        [Command("qtop")]
+        public async Task MiasmaTop10()
         {
             if (Context.Channel.Name == "okragly_stul")
             {
@@ -333,11 +333,11 @@ namespace Penthouse_Security
                 return;
             }
 
-            var miasmaTop10 = services.miasmaInfoservice.MiasmaTop10(remainder);
+            var miasmaTop10 = services.miasmaInfoservice.MiasmaTop10();
             await Context.Channel.SendMessageAsync(miasmaTop10.Result);
         }
 
-        [Command("quranorank")]
+        [Command("qrank")]
         public async Task MiasmaRank([Remainder] string rank)
         {
             if (Context.Channel.Name == "okragly_stul")
@@ -348,30 +348,6 @@ namespace Penthouse_Security
 
             var miasmaRank = services.miasmaInfoservice.MiasmaRank(rank);
             await Context.Channel.SendMessageAsync(miasmaRank.Result);
-        }
-
-        [Command("qrank")]
-        public async Task MiasmaRankShorthandle([Remainder] string rank)
-        {
-            await MiasmaRank(rank);
-        }
-
-        [Command("qvirus")]
-        public async Task MiasmaShorthandle()
-        {
-            await Quranovirus();
-        }
-
-        [Command("qstats")]
-        public async Task MiasmaByCountryShorthandle([Remainder] string remainder)
-        {
-            await Miasma(remainder);
-        }
-
-        [Command("qtop")]
-        public async Task MiasmaTop10Shorthandle([Remainder] string remainder)
-        {
-            await MiasmaTop10(remainder);
         }
     }
 }

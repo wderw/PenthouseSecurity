@@ -35,20 +35,20 @@ namespace Penthouse_Security
             int recoveredPercentage = Convert.ToInt32(100 * recoveredCount / totalCount);
 
             return
-                "Total cases:" + counter[totalCases].TextContent +
-                ", active cases: " + activeCasesCounter.First().TextContent + " `(" + activePercentage + "%)`" +
-                ", deaths: " + counter[deaths].TextContent + " `(" + deathsPercentage + "%)`" +
-                ", recovered: " + counter[recovered].TextContent + " `(" + recoveredPercentage + "%)`";
+                "Total cases: " + counter[totalCases].TextContent.Trim() +
+                ", active cases: " + activeCasesCounter.First().TextContent.Trim() + " `(" + activePercentage + "%)`" +
+                ", deaths: " + counter[deaths].TextContent.Trim() + " `(" + deathsPercentage + "%)`" +
+                ", recovered: " + counter[recovered].TextContent.Trim() + " `(" + recoveredPercentage + "%)`";
         }
 
-        public async Task<string> MiasmaTop10(string forStates)
-        {
-            var siteToScrape = forStates == "states" ? "coronaSiteUrlStates" : "coronaSiteUrl";
-            var idOfTableDivElement = forStates == "states" ? "usa_table_countries_today" : "main_table_countries_today";
-
-            var document = await websiteScraper.ScrapeWebsite(Config.vars[siteToScrape]);
-            var countryTable = document.All.Where(x => x.Id == idOfTableDivElement).First();
+        public async Task<string> MiasmaTop10()
+        {   
+            var document = await websiteScraper.ScrapeWebsite(Config.vars["coronaSiteUrl"]);
+            var countryTable = document.All.Where(x => x.Id == "main_table_countries_today").First();
             var tableBody = countryTable.Children[1];
+
+            var tableRows = tableBody.Children.ToArray();
+            Array.Sort(tableRows, CompareCountryRowsByTotals);
 
             var result = new StringBuilder();
 
@@ -57,8 +57,8 @@ namespace Penthouse_Security
 
             for (int i = 0; i < 10; ++i)
             {
-                var entry = tableBody.Children[i];
-                var columns = entry.Children;
+                var row = tableRows[i];
+                var columns = row.Children;
 
                 result.Append("#" + (i + 1).ToString());
                 result.Append("  *");
@@ -90,11 +90,14 @@ namespace Penthouse_Security
             var countryTable = document.All.Where(x => x.Id == table_html_element).First();
             var tableBody = countryTable.Children[1];
 
-            for(int i = 0; i < tableBody.Children.Length; ++i)
+            var tableRows = tableBody.Children.ToArray();
+            Array.Sort(tableRows, CompareCountryRowsByTotals);
+
+            for (int i = 0; i < tableRows.Length; ++i)
             {
-                var entry = tableBody.Children[i];
-                var columns = entry.Children;
-                if(entry.TextContent.ToLower().Contains(country.ToLower()))
+                var row = tableRows[i];
+                var columns = row.Children;
+                if(row.TextContent.ToLower().Contains(country.ToLower()))
                 {
                     var result = new StringBuilder();
                     result.AppendLine("__Quranovirus stats for: **" + columns[0].TextContent.Trim() + "**__" + areYesterdaysStats);
@@ -122,13 +125,16 @@ namespace Penthouse_Security
             var countryTable = document.All.Where(x => x.Id == "main_table_countries_today").First();
             var tableBody = countryTable.Children[1];
 
+            var tableRows = tableBody.Children.ToArray();
+            Array.Sort(tableRows, CompareCountryRowsByTotals);
+
             var result = new StringBuilder();
 
             result.AppendLine("__Quranovirus at rank: **#" + iRank + "**__");
             result.AppendLine();
 
-            var entry = tableBody.Children[iRank - 1];
-            var columns = entry.Children;
+            var row = tableRows[iRank - 1];
+            var columns = row.Children;
 
             result.Append(columns[0].TextContent.Trim() + " (");
             if (columns[1].TextContent.Trim().Length != 0) result.Append(columns[1].TextContent.Trim() + " cases)");
@@ -136,6 +142,19 @@ namespace Penthouse_Security
             result.AppendLine();
 
             return result.ToString();
+        }
+
+        public int CompareCountryRowsByTotals(AngleSharp.Dom.IElement x, AngleSharp.Dom.IElement y)
+        {
+            var xColumns = x.Children;
+            int xTotals = int.Parse(xColumns[1].TextContent.Replace(",", ""));
+
+            var yColumns = y.Children;
+            int yTotals = int.Parse(yColumns[1].TextContent.Replace(",", ""));
+
+            if (xTotals > yTotals) { return -1; }
+            else if (xTotals < yTotals) { return 1; }
+            else return 0;
         }
     }
 }
