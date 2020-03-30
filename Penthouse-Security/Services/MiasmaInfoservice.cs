@@ -41,6 +41,39 @@ namespace Penthouse_Security
                 ", recovered: " + counter[recovered].TextContent.Trim() + " `(" + recoveredPercentage + "%)`";
         }
 
+        public async Task<string> MiasmaTop10States()
+        {
+            var document = await websiteScraper.ScrapeWebsite(Config.vars["coronaSiteUrlStates"]);
+            var countryTable = document.All.Where(x => x.Id == "usa_table_countries_today").First();
+            var tableBody = countryTable.Children[1];
+
+            var tableRows = tableBody.Children.ToArray();
+            Array.Sort(tableRows, CompareCountryRowsByTotals);
+
+            var result = new StringBuilder();
+
+            result.AppendLine("__Quranovirus Top10 USA States__");
+            result.AppendLine();
+
+            for (int i = 0; i < 10; ++i)
+            {
+                var row = tableRows[i];
+                var columns = row.Children;
+
+                result.Append("#" + (i + 1).ToString());
+                result.Append("  *");
+                result.Append(columns[0].TextContent.Trim() + "*  (");
+                if (columns[1].TextContent.Trim().Length != 0) result.Append(columns[1].TextContent.Trim() + ")");
+
+                if (i == 0) result.Append(":first_place:");
+                if (i == 1) result.Append(":second_place:");
+                if (i == 2) result.Append(":third_place:");
+
+                result.AppendLine();
+            }
+            return result.ToString();
+        }
+
         public async Task<string> MiasmaTop10()
         {   
             var document = await websiteScraper.ScrapeWebsite(Config.vars["coronaSiteUrl"]);
