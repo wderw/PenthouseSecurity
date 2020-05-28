@@ -55,9 +55,6 @@ namespace Penthouse_Security
             helpMessage.AppendLine("!slots - *slot machine description*");
             helpMessage.AppendLine("!stats - *show total spin stats*");
             helpMessage.AppendLine("!mystats - *show personal spin stats*");
-            helpMessage.AppendLine("!quranovirus - *show quranovirus infection totals*");
-            helpMessage.AppendLine("!quranostats - *show quranovirus stats by country*");
-            helpMessage.AppendLine("!quranotop10 - *show quranovirus top10 countries*");
 
             await Context.Channel.SendMessageAsync(helpMessage.ToString());
         }

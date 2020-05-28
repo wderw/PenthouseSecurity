@@ -93,9 +93,14 @@ namespace Penthouse_Security
                 var row = tableRows[i];
                 var columns = row.Children;
 
+                foreach(var c in columns)
+                {
+                    Log.Debug(c.TextContent);
+                }
+
                 result.Append("#" + (i + 1).ToString());
                 result.Append("  *");
-                result.Append(columns[0].TextContent.Trim() + "*  (");
+                result.Append(columns[2].TextContent.Trim() + "*  (");
                 if (columns[1].TextContent.Trim().Length != 0) result.Append(columns[1].TextContent.Trim() + ")");
 
                 if (i == 0) result.Append(":first_place:");
@@ -180,10 +185,10 @@ namespace Penthouse_Security
         public int CompareCountryRowsByTotals(AngleSharp.Dom.IElement x, AngleSharp.Dom.IElement y)
         {
             var xColumns = x.Children;
-            int xTotals = int.Parse(xColumns[1].TextContent.Replace(",", ""));
+            int xTotals = int.Parse(xColumns[2].TextContent.Replace(",", ""));
 
             var yColumns = y.Children;
-            int yTotals = int.Parse(yColumns[1].TextContent.Replace(",", ""));
+            int yTotals = int.Parse(yColumns[2].TextContent.Replace(",", ""));
 
             if (xTotals > yTotals) { return -1; }
             else if (xTotals < yTotals) { return 1; }
