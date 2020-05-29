@@ -333,31 +333,5 @@ namespace Penthouse_Security
             var miasmaTop10 = services.miasmaInfoservice.MiasmaTop10();
             await Context.Channel.SendMessageAsync(miasmaTop10.Result);
         }
-
-        [Command("qstates")]
-        public async Task MiasmaTop10States()
-        {
-            if (Context.Channel.Name == "okragly_stul")
-            {
-                await Context.Channel.SendMessageAsync("Tu mi kaganiec zalozyli.");
-                return;
-            }
-
-            var miasmaTop10 = services.miasmaInfoservice.MiasmaTop10States();
-            await Context.Channel.SendMessageAsync(miasmaTop10.Result);
-        }
-
-        [Command("qrank")]
-        public async Task MiasmaRank([Remainder] string rank)
-        {
-            if (Context.Channel.Name == "okragly_stul")
-            {
-                await Context.Channel.SendMessageAsync("Tu mi kaganiec zalozyli.");
-                return;
-            }
-
-            var miasmaRank = services.miasmaInfoservice.MiasmaRank(rank);
-            await Context.Channel.SendMessageAsync(miasmaRank.Result);
-        }
     }
 }

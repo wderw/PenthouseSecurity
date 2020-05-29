@@ -41,39 +41,6 @@ namespace Penthouse_Security
                 ", recovered: " + counter[recovered].TextContent.Trim() + " `(" + recoveredPercentage + "%)`";
         }
 
-        public async Task<string> MiasmaTop10States()
-        {
-            var document = await websiteScraper.ScrapeWebsite(Config.vars["coronaSiteUrlStates"]);
-            var countryTable = document.All.Where(x => x.Id == "usa_table_countries_today").First();
-            var tableBody = countryTable.Children[1];
-
-            var tableRows = tableBody.Children.ToArray();
-            Array.Sort(tableRows, CompareCountryRowsByTotals);
-
-            var result = new StringBuilder();
-
-            result.AppendLine("__Quranovirus Top10 USA States__");
-            result.AppendLine();
-
-            for (int i = 0; i < 10; ++i)
-            {
-                var row = tableRows[i];
-                var columns = row.Children;
-
-                result.Append("#" + (i + 1).ToString());
-                result.Append("  *");
-                result.Append(columns[0].TextContent.Trim() + "*  (");
-                if (columns[1].TextContent.Trim().Length != 0) result.Append(columns[1].TextContent.Trim() + ")");
-
-                if (i == 0) result.Append(":first_place:");
-                if (i == 1) result.Append(":second_place:");
-                if (i == 2) result.Append(":third_place:");
-
-                result.AppendLine();
-            }
-            return result.ToString();
-        }
-
         public async Task<string> MiasmaTop10()
         {   
             var document = await websiteScraper.ScrapeWebsite(Config.vars["coronaSiteUrl"]);
@@ -92,11 +59,6 @@ namespace Penthouse_Security
             {
                 var row = tableRows[i];
                 var columns = row.Children;
-
-                foreach(var c in columns)
-                {
-                    Log.Debug(c.TextContent);
-                }
 
                 result.Append("#" + (i + 1).ToString());
                 result.Append("  *");
@@ -138,14 +100,14 @@ namespace Penthouse_Security
                 if(row.TextContent.ToLower().Contains(country.ToLower()))
                 {
                     var result = new StringBuilder();
-                    result.AppendLine("__Quranovirus stats for: **" + columns[0].TextContent.Trim() + "**__" + areYesterdaysStats);
+                    result.AppendLine("__Quranovirus stats for: **" + columns[1].TextContent.Trim() + "**__" + areYesterdaysStats);
                     result.AppendLine();
-                    if (columns[1].TextContent.Trim().Length != 0) result.AppendLine("Total Cases: " + columns[1].TextContent.Trim());
-                    if (columns[2].TextContent.Trim().Length != 0) result.AppendLine("New Cases: " + columns[2].TextContent.Trim());
-                    if (columns[3].TextContent.Trim().Length != 0) result.AppendLine("Total Deaths: " + columns[3].TextContent.Trim());
-                    if (columns[4].TextContent.Trim().Length != 0) result.AppendLine("New Deaths: " + columns[4].TextContent.Trim());
-                    if (columns[5].TextContent.Trim().Length != 0) result.AppendLine("Total Recovered: " + columns[5].TextContent.Trim());
-                    if (columns[6].TextContent.Trim().Length != 0) result.AppendLine("Active Cases: " + columns[6].TextContent.Trim());
+                    if (columns[1].TextContent.Trim().Length != 0) result.AppendLine("Total Cases: " + columns[2].TextContent.Trim());
+                    if (columns[2].TextContent.Trim().Length != 0) result.AppendLine("New Cases: " + columns[3].TextContent.Trim());
+                    if (columns[3].TextContent.Trim().Length != 0) result.AppendLine("Total Deaths: " + columns[4].TextContent.Trim());
+                    if (columns[4].TextContent.Trim().Length != 0) result.AppendLine("New Deaths: " + columns[5].TextContent.Trim());
+                    if (columns[5].TextContent.Trim().Length != 0) result.AppendLine("Total Recovered: " + columns[6].TextContent.Trim());
+                    if (columns[6].TextContent.Trim().Length != 0) result.AppendLine("Active Cases: " + columns[7].TextContent.Trim());
                     result.AppendLine();
                     result.AppendLine("Rank: **#" + (i + 1).ToString() + "**");
 
@@ -154,34 +116,7 @@ namespace Penthouse_Security
             }
             return "Ale wpisz kurwa pajacu porzadnie to kauntry, z duzej jebanej litery i po angielsku jak pan bug przykazal.";            
         }
-
-        public async Task<string> MiasmaRank(string rank)
-        {
-            int iRank = int.Parse(rank);
-                        
-            var document = await websiteScraper.ScrapeWebsite(Config.vars["coronaSiteUrl"]);
-            var countryTable = document.All.Where(x => x.Id == "main_table_countries_today").First();
-            var tableBody = countryTable.Children[1];
-
-            var tableRows = tableBody.Children.ToArray();
-            Array.Sort(tableRows, CompareCountryRowsByTotals);
-
-            var result = new StringBuilder();
-
-            result.AppendLine("__Quranovirus at rank: **#" + iRank + "**__");
-            result.AppendLine();
-
-            var row = tableRows[iRank - 1];
-            var columns = row.Children;
-
-            result.Append(columns[0].TextContent.Trim() + " (");
-            if (columns[1].TextContent.Trim().Length != 0) result.Append(columns[1].TextContent.Trim() + " cases)");
-
-            result.AppendLine();
-
-            return result.ToString();
-        }
-
+        
         public int CompareCountryRowsByTotals(AngleSharp.Dom.IElement x, AngleSharp.Dom.IElement y)
         {
             var xColumns = x.Children;
