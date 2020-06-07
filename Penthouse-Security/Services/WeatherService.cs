@@ -170,54 +170,20 @@ namespace Penthouse_Security
 
             var report = new StringBuilder();
 
-            if (info.region == "FR")
-                report.Append("Le ");
-
-            report.AppendLine("Raport pogodowy na ździś dla wygwizdowa jakim jest **" + info.city + "**:");
+            report.AppendLine("Weather - **" + info.city + "**:");
             report.AppendLine();
-
-            if (info.region == "FR")
-                report.Append("Le ");
-
-            if (info.region == "JP")
-                report.AppendLine("Zobaczmy co tam u *chinoli* xD. ");
-
-            if (info.region == "PL")
-                report.AppendLine("Wykryto region: **cebulandia**. ");
-
-            report.Append("Temperatura to wynosi to **" + info.temperature.ToString() + "** stopni celcjusza, ");
-
-            if (info.temperature < 10 && info.temperature >= 0)
-            {
-                report.AppendLine("czyli troche pizga zimnem ale nie tragedia. ");
-            }
-            else if (info.temperature >= 10 && info.temperature < 30)
-            {
-                report.AppendLine("czyli nie pizga zimnem whuj ale zajebiscie tez nie jest. ");
-            }
-            else if (info.temperature < 0)
-            {
-                report.AppendLine("czyli mamy ponizej zera ojapierdole. ");
-            }
-            else
-            {
-                report.AppendLine("czyli znaczy sie ze napierdala goruncem jak nieopamientany chuj. ");
-            }
-
-            report.AppendLine("Cisnienie na ryj wynosi **" + info.pressure + "** hektorpaskali. ");
-            report.AppendLine("Hujmiditi procentowo wychodzi ze **" + info.humidity + " %**. ");
-            report.AppendLine("Wiater zapierdala z predkoscia **" + info.windSpeed + "** metra na sekunde kwadrat.");
-            report.AppendLine("Zahmurzenie procentowe **" + info.cloudiness + " %**. ");
-            report.AppendLine();
-            report.AppendLine("Rysuje sie to mniej wiecej tak: ");
 
             var quickInfo = GetQuickInfoById(info.id);
             string icon = quickInfo.icon;
-            string description = quickInfo.description;
 
-            report.AppendLine(icon);
+            report.Append(icon);
+            report.AppendLine(" **" + info.temperature.ToString() + " °C**");
+
+            report.AppendLine("pressure: **" + info.pressure + " hPa**");
+            report.AppendLine("humidity: **" + info.humidity + " %**");
+            report.AppendLine("wind: **" + info.windSpeed + " m/s**");
+            report.AppendLine("cloudiness: **" + info.cloudiness + " %**");
             report.AppendLine();
-            report.AppendLine("Ogolnie to " + description);
 
             return report.ToString();
         }
