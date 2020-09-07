@@ -13,6 +13,7 @@ namespace Penthouse_Security
         private class InvalidAppIdException : Exception { }
         private struct WeatherInfo
         {
+            public int dt;
             public int temperature;
             public string region;
             public int humidity;
@@ -127,11 +128,13 @@ namespace Penthouse_Security
             {
                 var info = new WeatherInfo
                 {
+                    
                     temperature = KelvinToCelsius(weather.SelectToken("$.list[" + i + "].main.temp").Value<int>()),
 
                     // unused in forecast
                     //info.region = weather.SelectToken("$.list[" + i + "].sys.country").Value<string>();
 
+                    dt = weather.SelectToken("$.list[" + i + "].dt").Value<int>(),
                     humidity = weather.SelectToken("$.list[" + i + "].main.humidity").Value<int>(),
                     windSpeed = weather.SelectToken("$.list[" + i + "].wind.speed").Value<double>(),
                     pressure = weather.SelectToken("$.list[" + i + "].main.pressure").Value<int>(),
@@ -139,7 +142,7 @@ namespace Penthouse_Security
                     cloudiness = weather.SelectToken("$.list[" + i + "].clouds.all").Value<string>(),
                     id = weather.SelectToken("$.list[" + i + "].weather[0].id").Value<int>()
                 };
-
+                
                 var today = (DateTime.Now + new TimeSpan(dayCount, 0, 0, 0)).DayOfWeek;
 
                 var quickInfo = GetQuickInfoById(info.id);
@@ -148,6 +151,11 @@ namespace Penthouse_Security
                 forecast.Append(info.temperature + "°C ");
                 forecast.Append(" `" + today + "`");                
                 forecast.AppendLine();
+
+                var datetime = DateTimeOffset.FromUnixTimeSeconds(info.dt);
+
+                Log.Debug(datetime.Hour.ToString() + ":" + datetime.Minute.ToString());
+
 
                 dayCount++;
             }

@@ -333,5 +333,12 @@ namespace Penthouse_Security
             var miasmaTop10 = services.miasmaInfoservice.MiasmaTop10();
             await Context.Channel.SendMessageAsync(miasmaTop10.Result);
         }
+
+        [Command("minecraft")]
+        public async Task MinecraftServerInfo()
+        {
+            var addressIp = Environment.GetEnvironmentVariable("MINECRAFT_IP");
+            await Context.Channel.SendMessageAsync("IP: " + addressIp);
+        }
     }
 }
