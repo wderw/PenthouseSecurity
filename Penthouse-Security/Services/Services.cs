@@ -7,7 +7,6 @@ namespace Penthouse_Security
 {
     class Services
     {
-        private Dictionary<string, bool> suspensionStatus;
         private readonly DiscordSocketClient discordClient;
 
         public static Services Instance
@@ -45,27 +44,8 @@ namespace Penthouse_Security
             websiteScraper = new WebsiteScraper();
             miasmaInfoservice = new MiasmaInfoservice(websiteScraper);
 
-            suspensionStatus = new Dictionary<string, bool> {{"slotmachine", false}};
-
             Log.Info("All services running.");
             Utils.MarkStartupTime();
-        }
-
-        public void Suspend(string serviceName)
-        {
-            suspensionStatus[serviceName] = true;
-            Log.Info("Service " + serviceName + " suspended.");
-        }
-
-        public void Resume(string serviceName)
-        {            
-            suspensionStatus[serviceName] = false;
-            Log.Info("Service " + serviceName + " resumed.");
-        }
-
-        public bool IsSuspended(string serviceName)
-        {
-            return suspensionStatus[serviceName];
         }
     }
 }

@@ -17,7 +17,6 @@ namespace Penthouse_Security
             { "discordApiLogTag", "[DISCORD API]" },
             { "applicationLogTag", "[APPLICATION]" },
             { "coronaSiteUrl" , "https://www.worldometers.info/coronavirus/" },
-            { "coronaSiteUrlStates" , "https://www.worldometers.info/coronavirus/country/us/" }
         };
     }
 }

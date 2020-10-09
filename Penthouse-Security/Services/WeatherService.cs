@@ -10,7 +10,7 @@ namespace Penthouse_Security
 {
     class WeatherService
     {
-        private class InvalidAppIdException : Exception { }
+        private class InvalidAppIdException : Exception {}
         private struct WeatherInfo
         {
             public int dt;

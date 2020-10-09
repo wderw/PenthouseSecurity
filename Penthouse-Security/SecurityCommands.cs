@@ -73,12 +73,12 @@ namespace Penthouse_Security
             string username = Context.User.Username;
 
             var randomValue = new Random().Next(1, 101);
-            string additionalText = "";
-            if (randomValue == 69) additionalText = ". Mam 5 lat i bawi mnie ta liczba.";
-            if (randomValue == 100) additionalText = ". ociechuj...";
-            if (randomValue == 1) additionalText = ". frajer xD.";
+            string additionalComment = "";
+            if (randomValue == 69) additionalComment = ". Mam 5 lat i bawi mnie ta liczba.";
+            if (randomValue == 100) additionalComment = ". ociechuj...";
+            if (randomValue == 1) additionalComment = ". frajer xD.";
 
-            await Context.Channel.SendMessageAsync(username + " rolled: " + "**" + randomValue + "**" + additionalText);
+            await Context.Channel.SendMessageAsync(username + " rolled: " + "**" + randomValue + "**" + additionalComment);
         }
 
         [Command("8ball")]
@@ -207,8 +207,6 @@ namespace Penthouse_Security
         [Command("spin")]
         public async Task SlotmachineSpin()
         {
-            if (Program.services.IsSuspended("slotmachine")) return;
-
             Task<string> result = services.slotmachine.Spin(Context.User.ToString());
             string username = Context.User.Username;
             await Context.Channel.SendMessageAsync(username + " has rolled:\n" + result.Result);
@@ -233,48 +231,6 @@ namespace Penthouse_Security
         {
             Embed stats = await services.slotmachine.SpinStats(Context.User.ToString());
             await Context.Channel.SendMessageAsync("", false, stats);
-        }
-
-        [Command("service")]
-        public async Task ServiceCommands([Remainder] string remainder)
-        {
-            if (Context.User.ToString() != "Puhree#2656")
-            {
-                await Context.Channel.SendMessageAsync("Unauthorized madafaka detected.");
-                return;
-            }
-
-            string[] args = remainder.Split(' ');
-
-            if (args.Length != 2)
-            {
-                await Context.Channel.SendMessageAsync("Unknown command");
-                return;
-            }
-
-            string command = args[0];
-            string serviceName = args[1];
-
-            switch (command)
-            {
-                case "suspend":
-                    {
-                        Program.services.Suspend(serviceName);
-                        await Context.Channel.SendMessageAsync(serviceName + " suspended.");
-                        break;
-                    }
-                case "resume":
-                    {
-                        Program.services.Resume(serviceName);
-                        await Context.Channel.SendMessageAsync(serviceName + " resumed.");
-                        break;
-                    }
-                default:
-                    {
-                        await Context.Channel.SendMessageAsync("Unknown command");
-                        break;
-                    }
-            }
         }
 
         [Command("qvirus")]
@@ -332,13 +288,6 @@ namespace Penthouse_Security
 
             var miasmaTop10 = services.miasmaInfoservice.MiasmaTop10();
             await Context.Channel.SendMessageAsync(miasmaTop10.Result);
-        }
-
-        [Command("minecraft")]
-        public async Task MinecraftServerInfo()
-        {
-            var addressIp = Environment.GetEnvironmentVariable("MINECRAFT_IP");
-            await Context.Channel.SendMessageAsync("IP: " + addressIp);
         }
     }
 }
