@@ -55,21 +55,32 @@ namespace Penthouse_Security
             result.AppendLine("__Quranovirus Top10__");
             result.AppendLine();
 
-            for (int i = 0; i < 10; ++i)
+            int rank = 1;
+            int i = 0;
+            while (rank <= 10)
             {
                 var row = tableRows[i];
                 var columns = row.Children;
 
-                result.Append("#" + (i + 1).ToString());
+                // [fix] pomijaj dodatkowe totalsy dla kontynentow
+                if (row.ClassName != null && row.ClassName.Contains("total"))
+                {
+                    i++;
+                    continue;
+                }
+                
+                result.Append("#" + rank.ToString());
                 result.Append("  *");
                 result.Append(columns[2].TextContent.Trim() + "*  (");
                 if (columns[1].TextContent.Trim().Length != 0) result.Append(columns[1].TextContent.Trim() + ")");
 
-                if (i == 0) result.Append(":first_place:");
-                if (i == 1) result.Append(":second_place:");
-                if (i == 2) result.Append(":third_place:");
+                if (rank == 1) result.Append(":first_place:");
+                if (rank == 2) result.Append(":second_place:");
+                if (rank == 3) result.Append(":third_place:");
 
                 result.AppendLine();
+                rank++;
+                i++;
             }
             return result.ToString();
         }
@@ -88,31 +99,117 @@ namespace Penthouse_Security
 
             var document = await websiteScraper.ScrapeWebsite(Config.vars["coronaSiteUrl"]);
             var countryTable = document.All.Where(x => x.Id == table_html_element).First();
+            var countryTableYday = document.All.Where(x => x.Id == "main_table_countries_yesterday").First();
+
+            var tableBodyYday = countryTableYday.Children[1];
             var tableBody = countryTable.Children[1];
 
             var tableRows = tableBody.Children.ToArray();
+            var tableRowsYday = tableBodyYday.Children.ToArray();
             Array.Sort(tableRows, CompareCountryRowsByTotals);
+            Array.Sort(tableRowsYday, CompareCountryRowsByTotals);
 
+            int savedYdayNewCases = 0;
+            for (int i = 0; i < tableRowsYday.Length; ++i)
+            {
+                var row = tableRowsYday[i];
+                var columns = row.Children;
+
+                // [fix] pomijaj dodatkowe totalsy dla kontynentow
+                if (row.ClassName != null && row.ClassName.Contains("total")) continue;
+
+                if (row.TextContent.ToLower().Contains(country.ToLower()))
+                {
+                    try
+                    {
+                        var trimmed = columns[3].TextContent.Trim().Replace("+", "").Replace(",", "");
+                        savedYdayNewCases = int.Parse(trimmed);
+                    }
+                    catch (Exception)
+                    {
+                        Log.Error("Wrong saved yday new cases format!");
+                    }
+                    break;
+                }
+            }
+
+            int rank = 1;
             for (int i = 0; i < tableRows.Length; ++i)
             {
                 var row = tableRows[i];
                 var columns = row.Children;
+
+                // [fix] pomijaj dodatkowe totalsy dla kontynentow
+                if (row.ClassName != null && row.ClassName.Contains("total")) continue;
+
                 if(row.TextContent.ToLower().Contains(country.ToLower()))
                 {
                     var result = new StringBuilder();
                     result.AppendLine("__Quranovirus stats for: **" + columns[1].TextContent.Trim() + "**__" + areYesterdaysStats);
                     result.AppendLine();
-                    if (columns[1].TextContent.Trim().Length != 0) result.AppendLine("Total Cases: " + columns[2].TextContent.Trim());
-                    if (columns[2].TextContent.Trim().Length != 0) result.AppendLine("New Cases: " + columns[3].TextContent.Trim());
-                    if (columns[3].TextContent.Trim().Length != 0) result.AppendLine("Total Deaths: " + columns[4].TextContent.Trim());
-                    if (columns[4].TextContent.Trim().Length != 0) result.AppendLine("New Deaths: " + columns[5].TextContent.Trim());
-                    if (columns[5].TextContent.Trim().Length != 0) result.AppendLine("Total Recovered: " + columns[6].TextContent.Trim());
-                    if (columns[6].TextContent.Trim().Length != 0) result.AppendLine("Active Cases: " + columns[7].TextContent.Trim());
-                    result.AppendLine();
-                    result.AppendLine("Rank: **#" + (i + 1).ToString() + "**");
 
+                    for (int columnIndex = 0; columnIndex < columns.Length; columnIndex++)
+                    {
+                        var content = columns[columnIndex].TextContent.Trim();
+                        if (content.Length == 0 || content == null)
+                        {
+                            content = "N/A";
+                        }
+
+                        switch (columnIndex)
+                        {                            
+                            case 2:
+                                result.Append("Cases: " + content);
+                                break;
+                            case 3:
+
+                                int delta = 0;
+                                try
+                                {
+                                    delta = int.Parse(content.Replace("+", "").Replace(",", "")) - savedYdayNewCases;
+                                }
+                                catch(Exception)
+                                {
+                                    Log.Error("Delta cannot be parsed!");
+                                }
+                                
+                                if(delta > 0)
+                                {
+                                    result.AppendLine(" (**" + content + "**)" + " delta: +" + delta + ":chart_with_upwards_trend:");
+                                }
+                                else if(delta < 0)
+                                {
+                                    result.AppendLine(" (**" + content + "**)" + " delta: " + delta + ":chart_with_downwards_trend:");
+                                }
+                                else
+                                {
+                                    result.AppendLine(" (**" + content + "**)" + " delta: " + delta);
+                                }
+                                
+                                break;
+                            case 4:
+                                result.Append("Deaths: " + content);
+                                break;
+                            case 5:
+                                result.AppendLine(" (" + content + ")");
+                                break;
+                            case 6:
+                                result.AppendLine("Recovered: " + content);
+                                break;
+                            case 8:
+                                result.AppendLine("Active: " + content);
+                                break;
+                            default:
+                                break;
+                        }
+                    }  
+
+                    result.AppendLine();
+                    result.AppendLine("Rank: **#" + rank.ToString() + "**");
+                    
                     return result.ToString();
-                }                
+                }
+                rank++;
             }
             return "Ale wpisz kurwa pajacu porzadnie to kauntry, z duzej jebanej litery i po angielsku jak pan bug przykazal.";            
         }
