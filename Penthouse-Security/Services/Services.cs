@@ -44,7 +44,7 @@ namespace Penthouse_Security
             websiteScraper = new WebsiteScraper();
             miasmaInfoservice = new MiasmaInfoservice(websiteScraper);
 
-            Log.Info("All services running.");
+            Log.Info("Done.");
             Utils.MarkStartupTime();
         }
     }

@@ -30,7 +30,6 @@ namespace Penthouse_Security
             if (msg == null) return;
 
             var context = new SocketCommandContext(client, msg);
-
             int argPos = 0;
 
             if(msg.HasStringPrefix(Config.vars["cmdPrefix"], ref argPos) ||
@@ -38,27 +37,11 @@ namespace Penthouse_Security
                 )
             {
                 IResult result;
-                string firstFive = msg.Content.Substring(0, 5).ToLower();
-                if (firstFive == "!roll")
-                {
-                    result = await service.ExecuteAsync(context, "roll", null);
-                }
-                else if (firstFive == "!spin")
-                {
-                    result = await service.ExecuteAsync(context, "spin", null);
-                }
-                else
-                {
-                    result = await service.ExecuteAsync(context, argPos, null);
-                }
+                result = await service.ExecuteAsync(context, argPos, null);
                 
                 if(!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                 {
                     Log.Error(result.ErrorReason);
-                }
-                else
-                {
-                    Log.Debug("Executing command: " + msg.Content);
                 }
             }
         }
